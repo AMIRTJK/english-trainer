@@ -1,0 +1,123 @@
+import type { Question, SourceRef } from '../../types';
+import { makeQuestions, type Draft } from './build';
+
+const P104 = { book: 'SB', page: 104, ref: 'Grammar Bank 7A / 7B' } as const;
+const P106 = { book: 'SB', page: 106, ref: 'Grammar Bank 8A / 8B' } as const;
+const P108 = { book: 'SB', page: 108, ref: 'Grammar Bank 9A / 9B' } as const;
+
+const wordOrderDrafts: Draft[] = [
+  { q: 'Which question is correct?',
+    o: ['Where you do go?', 'Where do you go?', 'Where go you?'], a: 1,
+    e: 'The order is question word, auxiliary, subject, infinitive.', c: 'quasi', d: 1 },
+  { q: 'Which question is correct?',
+    o: ['Do you go out on Friday night?', 'You do go out on Friday night?', 'Go you out on Friday night?'],
+    a: 0, e: 'The order is auxiliary, subject, infinitive.', c: 'asi' },
+  { q: '___ does your sister do?', o: ['What', 'Where', 'Who'], a: 0,
+    e: 'We ask about a job with What.', c: 'quasi' },
+  { q: 'What music ___ you like?', o: ['does', 'do', 'are'], a: 1,
+    e: 'You takes do.', c: 'quasi' },
+  { q: 'When ___ Jane go to the gym?', o: ['do', 'does', 'is'], a: 1,
+    e: 'Jane is she, so we use does.', c: 'quasi' },
+  { q: 'How ___ you spell your name?', o: ['do', 'does', 'are'], a: 0,
+    e: 'You takes do.', c: 'quasi' },
+  { q: 'Which question is correct?',
+    o: ['Are you tired?', 'You are tired?', 'Tired are you?'], a: 0,
+    e: 'With be the verb comes before the subject.', c: 'asi', d: 1 },
+  { q: 'Why ___ you late?', o: ['do', 'are', 'does'], a: 1,
+    e: 'Late is an adjective, so the question uses be.', c: 'asi', d: 3 },
+];
+
+const imperativeDrafts: Draft[] = [
+  { q: '___ your books, please.', o: ['Opening', 'Open', 'You open'], a: 1,
+    e: 'Imperatives use the infinitive without a subject.', c: 'imperative', d: 1 },
+  { q: '___ talk in the exam.', o: ['Not', 'Don’t', 'No'], a: 1,
+    e: 'Negative imperatives use Don’t.', c: 'imperative' },
+  { q: '___ late for class!', o: ['Don’t be', 'Don’t', 'Not be'], a: 0,
+    e: 'With be the negative imperative is Don’t be.', c: 'imperative', d: 3 },
+  { q: 'Listen to ___! I’m talking to you.', o: ['I', 'my', 'me'], a: 2,
+    e: 'After a verb we use the object pronoun me.', c: 'object-pronoun' },
+  { q: 'I see ___ every week.', o: ['he', 'him', 'his'], a: 1,
+    e: 'The object pronoun for he is him.', c: 'object-pronoun', d: 1 },
+  { q: 'Don’t talk to ___.', o: ['she', 'her', 'hers'], a: 1,
+    e: 'The object pronoun for she is her.', c: 'object-pronoun' },
+  { q: 'They don’t speak to ___.', o: ['we', 'our', 'us'], a: 2,
+    e: 'The object pronoun for we is us.', c: 'object-pronoun' },
+  { q: 'They’re good books. I want to read ___.', o: ['they', 'them', 'their'], a: 1,
+    e: 'The object pronoun for they is them.', c: 'object-pronoun' },
+  { q: 'It’s a nice coat. I want ___ for Christmas.', o: ['it', 'its', 'it’s'], a: 0,
+    e: 'The object pronoun for it is it.', c: 'object-pronoun' },
+  { q: 'I love ___.', o: ['you', 'your', 'yours'], a: 0,
+    e: 'The object pronoun for you is you.', c: 'object-pronoun', d: 1 },
+];
+
+const canDrafts: Draft[] = [
+  { q: 'I ___ park here. It’s free.', o: ['can', 'can to', 'cans'], a: 0,
+    e: 'Can is followed by the infinitive without to.', c: 'can-form', d: 1 },
+  { q: 'She ___ come to dinner tonight. She’s busy.', o: ['can’t', 'doesn’t can', 'not can'], a: 0,
+    e: 'The negative of can is can’t.', c: 'can-form' },
+  { q: 'Which question is correct?',
+    o: ['Do I can sit here?', 'Can I sit here?', 'I can sit here?'], a: 1,
+    e: 'Questions put can before the subject.', c: 'can-form', d: 3 },
+  { q: 'A: Can he help us? B: Yes, he ___.', o: ['can', 'cans', 'does'], a: 0,
+    e: 'The short answer is Yes, he can.', c: 'can-form' },
+  { q: 'A: Can they come tonight? B: No, they ___.', o: ['don’t', 'can’t', 'aren’t'], a: 1,
+    e: 'The short answer is No, they can’t.', c: 'can-form' },
+  { q: 'He ___ swim very well.', o: ['can', 'can’s', 'is can'], a: 0,
+    e: 'Can is the same for all persons.', c: 'can-form', d: 1 },
+  { q: 'You ___ park on a yellow line.', o: ['can’t', 'don’t can', 'aren’t can'], a: 0,
+    e: 'Can’t means it is not possible or not allowed.', c: 'can-form' },
+
+  { q: 'I love ___.', o: ['cook', 'cooking', 'to cooking'], a: 1,
+    e: 'After like, love and hate we use verb plus -ing.', c: 'like-ing', d: 1 },
+  { q: 'I hate ___ up early.', o: ['get', 'getting', 'gets'], a: 1,
+    e: 'Get becomes getting: one vowel plus one consonant doubles the consonant.', c: 'like-ing', d: 3 },
+  { q: 'She doesn’t like ___.', o: ['flying', 'fly', 'flyes'], a: 0,
+    e: 'Fly becomes flying.', c: 'like-ing' },
+  { q: 'He loves ___.', o: ['cycle', 'cycleing', 'cycling'], a: 2,
+    e: 'A verb ending in e drops the e: cycling.', c: 'like-ing', d: 3 },
+  { q: 'We like ___ in the sea.', o: ['swiming', 'swimming', 'swim'], a: 1,
+    e: 'Swim doubles the m: swimming.', c: 'like-ing', d: 3 },
+  { q: 'I don’t like ___ at night.', o: ['drive', 'driving', 'driveing'], a: 1,
+    e: 'Drive drops the e: driving.', c: 'like-ing' },
+  { q: 'What do you like ___ at the weekend?', o: ['do', 'doing', 'to doing'], a: 1,
+    e: 'After like we use verb plus -ing.', c: 'like-ing' },
+  { q: 'He doesn’t like ___.', o: ['shopping', 'shoping', 'shop'], a: 0,
+    e: 'Shop doubles the p: shopping.', c: 'like-ing', d: 3 },
+];
+
+const continuousDrafts: Draft[] = [
+  { q: 'I can’t talk now. I ___.', o: ['drive', 'driving', 'am driving'], a: 2,
+    e: 'For something happening now we use be plus verb plus -ing.', c: 'form', d: 1 },
+  { q: 'She ___ a shower at the moment.', o: ['is having', 'has', 'having'], a: 0,
+    e: 'At the moment needs the present continuous.', c: 'form' },
+  { q: 'They ___ to the teacher.', o: ['aren’t listen', 'aren’t listening', 'don’t listening'], a: 1,
+    e: 'The negative is be plus not plus verb plus -ing.', c: 'form' },
+  { q: '___ you working now?', o: ['Do', 'Are', 'Is'], a: 1,
+    e: 'Present continuous questions use be.', c: 'form' },
+  { q: 'A: Is she having a shower? B: Yes, ___.', o: ['she is', 'she does', 'she has'], a: 0,
+    e: 'The short answer uses be: Yes, she is.', c: 'form' },
+  { q: 'Where ___ you going?', o: ['do', 'are', 'is'], a: 1,
+    e: 'The order is question word, be, subject, verb plus -ing.', c: 'form' },
+  { q: 'It ___ today. Take your umbrella.', o: ['rains', 'is raining', 'rain'], a: 1,
+    e: 'Today means now, so we use the present continuous.', c: 'form' },
+  { q: 'I work in an office. Today I ___ at home.', o: ['work', 'am working', 'works'], a: 1,
+    e: 'Today is different from usually, so we use the present continuous.', c: 'simple-vs-cont', d: 3 },
+  { q: 'I usually ___ a suit for work.', o: ['am wearing', 'wear', 'wears'], a: 1,
+    e: 'Usually needs the present simple.', c: 'simple-vs-cont', d: 3 },
+  { q: 'Jane’s in the kitchen. She ___.', o: ['cooks', 'is cooking', 'cook'], a: 1,
+    e: 'This is happening now, so we use the present continuous.', c: 'simple-vs-cont' },
+  { q: 'I never ___ up early on Saturday.', o: ['am getting', 'get', 'gets'], a: 1,
+    e: 'Never is an adverb of frequency, so we use the present simple.', c: 'simple-vs-cont', d: 3 },
+  { q: 'A: What are you doing here? B: I ___ for a friend.', o: ['wait', 'am waiting', 'waits'], a: 1,
+    e: 'This is happening now, so we use the present continuous.', c: 'simple-vs-cont' },
+];
+
+const cfg = (topicId: string, unit: number, slug: string, source: SourceRef) =>
+  ({ topicId, categoryId: 'grammar' as const, unit, type: 'gap-fill' as const, source, slug });
+
+export const gramWordOrder: Question[] = makeQuestions(cfg('beg-g-word-order-questions', 7, 'wo', P104), wordOrderDrafts);
+export const gramImperatives: Question[] = makeQuestions(cfg('beg-g-imperatives-object-pronouns', 7, 'im', P104), imperativeDrafts);
+export const gramCan: Question[] = makeQuestions(cfg('beg-g-can-cant', 8, 'cn', P106), canDrafts.slice(0, 7));
+export const gramLikeIng: Question[] = makeQuestions(cfg('beg-g-like-verb-ing', 8, 'lk', P106), canDrafts.slice(7));
+export const gramPresentContinuous: Question[] = makeQuestions(cfg('beg-g-present-continuous', 9, 'pc', P108), continuousDrafts.slice(0, 7));
+export const gramContOrSimple: Question[] = makeQuestions(cfg('beg-g-pres-cont-or-simple', 9, 'cs', P108), continuousDrafts.slice(7));

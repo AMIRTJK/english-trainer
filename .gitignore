@@ -1,0 +1,20 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+.vercel
+
+# Source material, kept locally only.
+#
+# These folders are inputs used when authoring content, never read by the app,
+# the build or the tests. They are not committed because:
+#   - books/ holds copyrighted Oxford University Press course PDFs (~43 MB);
+#   - test/ holds photographs of a completed personal test paper;
+#   - vocabulary/ is an old hand-made word list that is not trusted anyway.
+#
+# Everything derived from them is committed: the question bank in content/,
+# the verified test analysis in content/beginner/imported-quick-test.ts,
+# and the reasoning in docs/decisions.md.
+books/
+test/
+vocabulary/

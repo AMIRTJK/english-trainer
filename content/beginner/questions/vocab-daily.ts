@@ -1,0 +1,164 @@
+import type { Question } from '../../types';
+import { makeQuestions, type Draft } from './build';
+
+const VB = (page: number, ref: string) => ({ book: 'SB' as const, page, ref });
+
+const jobDrafts: Draft[] = [
+  { q: 'This person works in a school.', o: ['a doctor', 'a teacher', 'a waiter'], a: 1,
+    e: 'A teacher works in a school.', c: 'jobs', d: 1 },
+  { q: 'This person works in a hospital.', o: ['a nurse', 'a journalist', 'a shop assistant'], a: 0,
+    e: 'A nurse works in a hospital.', c: 'jobs', d: 1 },
+  { q: 'This person brings your food in a restaurant.', o: ['a receptionist', 'a waiter', 'a policeman'], a: 1,
+    e: 'A waiter serves food.', c: 'jobs' },
+  { q: 'This person writes for a newspaper.', o: ['a journalist', 'a factory worker', 'a taxi driver'], a: 0,
+    e: 'A journalist writes for newspapers.', c: 'jobs' },
+  { q: 'This person answers the phone at a hotel.', o: ['a nurse', 'a receptionist', 'a doctor'], a: 1,
+    e: 'A receptionist works at reception.', c: 'jobs' },
+  { q: 'Where does a doctor work?', o: ['in a factory', 'in a hospital', 'in a shop'], a: 1,
+    e: 'A doctor works in a hospital.', c: 'places', d: 1 },
+  { q: 'Where does a shop assistant work?', o: ['in a shop', 'in an office', 'at home'], a: 0,
+    e: 'A shop assistant works in a shop.', c: 'places', d: 1 },
+  { q: 'Where does a factory worker work?', o: ['in a school', 'in a factory', 'in the street'], a: 1,
+    e: 'A factory worker works in a factory.', c: 'places', d: 1 },
+  { q: 'I don’t have a job. I’m ___.', o: ['retired', 'unemployed', 'a student'], a: 1,
+    e: 'Unemployed means you don’t have a job now.', c: 'status', d: 3 },
+  { q: 'I’m 70 and I don’t work now. I’m ___.', o: ['retired', 'unemployed', 'a student'], a: 0,
+    e: 'Retired means you have finished your working life.', c: 'status', d: 3 },
+  { q: 'I study economics. I’m ___ university.', o: ['in', 'at', 'on'], a: 1,
+    e: 'The book says I’m at university.', c: 'status', d: 3 },
+];
+
+const dayDrafts: Draft[] = [
+  { q: 'What do you do first in the morning?', o: ['go to bed', 'get up', 'have dinner'], a: 1,
+    e: 'You get up first.', c: 'routine', d: 1 },
+  { q: 'I ___ a shower every morning.', o: ['do', 'make', 'have'], a: 2,
+    e: 'The book uses have a shower.', c: 'collocation', d: 3 },
+  { q: 'I ___ housework on Saturday.', o: ['do', 'make', 'have'], a: 0,
+    e: 'We do housework but make dinner.', c: 'collocation', d: 3 },
+  { q: 'I ___ dinner for my family every evening.', o: ['do', 'make', 'have a'], a: 1,
+    e: 'We make dinner and make coffee.', c: 'collocation', d: 3 },
+  { q: 'Which sentence is correct?', o: ['I go to home at six.', 'I go home at six.', 'I go at home at six.'],
+    a: 1, e: 'We say go home, with no to.', c: 'collocation', d: 3 },
+  { q: 'I go ___ the gym after work.', o: ['to', 'to the', 'at'], a: 1,
+    e: 'We say go to the gym and go to the cinema.', c: 'collocation', d: 3 },
+  { q: 'I ___ work at five o’clock and go home.', o: ['finish', 'start', 'get'], a: 0,
+    e: 'Finish work means the working day ends.', c: 'routine' },
+  { q: 'I ___ shopping on Saturday morning.', o: ['do', 'go', 'have'], a: 1,
+    e: 'We say go shopping.', c: 'collocation' },
+  { q: 'The last thing at night: I ___.', o: ['get up', 'go to bed', 'have breakfast'], a: 1,
+    e: 'You go to bed at the end of the day.', c: 'routine', d: 1 },
+  { q: 'We have lunch in the ___.', o: ['morning', 'afternoon', 'evening'], a: 1,
+    e: 'Lunch is in the afternoon.', c: 'routine' },
+];
+
+const freeTimeDrafts: Draft[] = [
+  { q: 'I ___ tennis with my brother on Sunday.', o: ['do', 'go', 'play'], a: 2,
+    e: 'We play tennis and play the piano.', c: 'collocation', d: 3 },
+  { q: 'I ___ sport three times a week.', o: ['do', 'play', 'go'], a: 0,
+    e: 'The book uses do sport.', c: 'collocation', d: 3 },
+  { q: 'I ___ out at night with my friends.', o: ['go', 'do', 'play'], a: 0,
+    e: 'We say go out.', c: 'collocation' },
+  { q: 'I ___ computer games in the evening.', o: ['do', 'play', 'go'], a: 1,
+    e: 'We play computer games.', c: 'collocation' },
+  { q: 'I ___ friends after work.', o: ['meet', 'play', 'do'], a: 0,
+    e: 'We meet friends.', c: 'collocation' },
+  { q: 'I ___ at home and watch TV on Sunday.', o: ['stay', 'go', 'do'], a: 0,
+    e: 'We say stay at home.', c: 'collocation' },
+  { q: 'Which word is different? swim', o: ['walk', 'relax', 'run'], a: 1,
+    e: 'Swim, walk and run are exercise. Relax is not.', c: 'odd-one-out', d: 3 },
+  { q: 'A film about cowboys is a ___.', o: ['comedy', 'western', 'horror film'], a: 1,
+    e: 'A western is about cowboys.', c: 'films' },
+  { q: 'A film that makes you laugh is a ___.', o: ['comedy', 'drama', 'western'], a: 0,
+    e: 'A comedy makes you laugh.', c: 'films', d: 1 },
+  { q: 'A film that makes you afraid is a ___.', o: ['musical', 'horror film', 'comedy'], a: 1,
+    e: 'A horror film is frightening.', c: 'films' },
+  { q: 'A film with a lot of singing is a ___.', o: ['musical', 'western', 'drama'], a: 0,
+    e: 'A musical has songs.', c: 'films' },
+];
+
+const travelDrafts: Draft[] = [
+  { q: 'Before a holiday you ___ your suitcase.', o: ['pack', 'book', 'rent'], a: 0,
+    e: 'You pack a suitcase.', c: 'travel' },
+  { q: 'You ___ tickets on the internet.', o: ['pack', 'book', 'wear'], a: 1,
+    e: 'You book tickets.', c: 'travel' },
+  { q: 'At the airport you ___ for your flight.', o: ['wait', 'carry', 'rent'], a: 0,
+    e: 'You wait for a flight.', c: 'travel' },
+  { q: 'You ___ a car when you don’t have one.', o: ['book', 'rent', 'pack'], a: 1,
+    e: 'You rent a car.', c: 'travel' },
+  { q: 'You ___ sunglasses when the sun is hot.', o: ['wear', 'carry', 'buy'], a: 0,
+    e: 'We wear sunglasses.', c: 'travel' },
+  { q: 'You ___ at a hotel and then you stay there.', o: ['leave', 'arrive', 'pack'], a: 1,
+    e: 'You arrive at a hotel.', c: 'travel' },
+  { q: 'Which word is different? a jacket', o: ['a coat', 'a sweater', 'a hat'], a: 2,
+    e: 'A jacket, a coat and a sweater go on your body. A hat goes on your head.',
+    c: 'clothes', d: 3 },
+  { q: 'You wear these on your feet.', o: ['trainers', 'a shirt', 'a cap'], a: 0,
+    e: 'Trainers and shoes go on your feet.', c: 'clothes', d: 1 },
+  { q: 'Which word is different? jeans', o: ['trousers', 'shorts', 'a dress'], a: 2,
+    e: 'Jeans, trousers and shorts have two legs. A dress does not.', c: 'clothes', d: 3 },
+  { q: 'A man wears this with a shirt for work.', o: ['a suit', 'a skirt', 'a dress'], a: 0,
+    e: 'A suit is formal clothing.', c: 'clothes' },
+];
+
+const numberDrafts: Draft[] = [
+  { q: 'Which number is 15?', o: ['fifty', 'fifteen', 'five'], a: 1,
+    e: '15 is fifteen. 50 is fifty.', c: 'numbers', d: 1 },
+  { q: 'Which number is 40?', o: ['fourteen', 'four', 'forty'], a: 2,
+    e: '40 is forty, spelled without a u.', c: 'numbers', d: 3 },
+  { q: 'Which number is 90?', o: ['ninety', 'nineteen', 'nine'], a: 0,
+    e: '90 is ninety.', c: 'numbers', d: 1 },
+  { q: 'What comes after Tuesday?', o: ['Monday', 'Wednesday', 'Thursday'], a: 1,
+    e: 'Wednesday follows Tuesday.', c: 'days', d: 1 },
+  { q: 'Which month is the first month of the year?', o: ['June', 'July', 'January'], a: 2,
+    e: 'January is the first month.', c: 'months', d: 1 },
+  { q: 'Which month comes after August?', o: ['September', 'October', 'July'], a: 0,
+    e: 'September follows August.', c: 'months' },
+  { q: 'How do we write 3rd in words?', o: ['three', 'third', 'threeth'], a: 1,
+    e: '3rd is third.', c: 'ordinals' },
+  { q: 'How do we write 12th in words?', o: ['twelvth', 'twelfth', 'twelveth'], a: 1,
+    e: '12th is twelfth.', c: 'ordinals', d: 3 },
+  { q: 'In English, months begin with ___.', o: ['a capital letter', 'a small letter', 'a number'], a: 0,
+    e: 'We write January, not january.', c: 'months', d: 3 },
+  { q: 'What time is 7.30?', o: ['half past seven', 'seven past half', 'half to seven'], a: 0,
+    e: '7.30 is half past seven.', c: 'time' },
+  { q: 'What time is 9.15?', o: ['quarter to nine', 'a quarter past nine', 'half past nine'], a: 1,
+    e: '9.15 is a quarter past nine.', c: 'time' },
+  { q: 'What time is 5.45?', o: ['a quarter to six', 'a quarter past five', 'half past five'], a: 0,
+    e: '5.45 is a quarter to six.', c: 'time', d: 3 },
+];
+
+const countryDrafts: Draft[] = [
+  { q: 'People from Spain are ___.', o: ['Spain', 'Spanish', 'Spainish'], a: 1,
+    e: 'The nationality of Spain is Spanish.', c: 'nationalities', d: 1 },
+  { q: 'People from Japan are ___.', o: ['Japanish', 'Japanese', 'Japan'], a: 1,
+    e: 'The nationality of Japan is Japanese.', c: 'nationalities' },
+  { q: 'People from Turkey are ___.', o: ['Turkish', 'Turkey', 'Turkeyan'], a: 0,
+    e: 'The nationality of Turkey is Turkish.', c: 'nationalities' },
+  { q: 'People from the UK are ___.', o: ['English', 'British', 'America'], a: 1,
+    e: 'The UK is England, Scotland, Wales and Northern Ireland, so the word is British.',
+    c: 'nationalities', d: 3 },
+  { q: 'People from Egypt are ___.', o: ['Egypt', 'Egyptish', 'Egyptian'], a: 2,
+    e: 'The nationality of Egypt is Egyptian.', c: 'nationalities' },
+  { q: 'Rome is in ___.', o: ['Italy', 'Spain', 'France'], a: 0,
+    e: 'Rome is the capital of Italy.', c: 'countries', d: 1 },
+  { q: 'Which word is different? Brazil', o: ['China', 'Mexican', 'Poland'], a: 1,
+    e: 'Brazil, China and Poland are countries. Mexican is a nationality.', c: 'countries', d: 3 },
+  { q: 'The language in Brazil is ___.', o: ['Brazilian', 'Portuguese', 'Spanish'], a: 1,
+    e: 'The book notes that in Brazil the language is Portuguese.', c: 'countries', d: 3 },
+];
+
+const cfg = (topicId: string, unit: number, slug: string, page: number, ref: string) =>
+  ({ topicId, categoryId: 'vocabulary' as const, unit, type: 'choose-word' as const, source: VB(page, ref), slug });
+
+export const vocabJobs: Question[] = makeQuestions(
+  cfg('beg-v-jobs-work', 6, 'jo', 124, 'Vocabulary Bank — Jobs and places of work'), jobDrafts);
+export const vocabTypicalDay: Question[] = makeQuestions(
+  cfg('beg-v-typical-day', 6, 'td', 125, 'Vocabulary Bank — A typical day'), dayDrafts);
+export const vocabFreeTime: Question[] = makeQuestions(
+  cfg('beg-v-free-time', 7, 'ft', 126, 'Vocabulary Bank — Common verb phrases 2'), freeTimeDrafts);
+export const vocabTravel: Question[] = makeQuestions(
+  cfg('beg-v-travelling', 9, 'tr', 126, 'Vocabulary Bank — Travelling; Clothes'), travelDrafts);
+export const vocabNumbers: Question[] = makeQuestions(
+  cfg('beg-v-numbers', 1, 'nu', 116, 'Vocabulary Bank — Numbers, months, ordinals'), numberDrafts);
+export const vocabCountries: Question[] = makeQuestions(
+  cfg('beg-v-countries-nationalities', 2, 'cy', 117, 'Vocabulary Bank — Countries and nationalities'), countryDrafts);

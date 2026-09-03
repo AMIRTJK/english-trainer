@@ -7,6 +7,12 @@
     <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f1116" media="(prefers-color-scheme: dark)" />
     <title>English File Trainer — Beginner</title>
+    <script>
+      try {
+        const t = localStorage.getItem('eft:v1:theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

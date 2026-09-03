@@ -6,6 +6,7 @@ import { useLevelData, weakAreas } from '@/entities/topic/model/use-level-data';
 import { categoryBreakdown } from '@/entities/attempt/model/statistics';
 import { Bar, Empty, Pill, Stat, formatDate, toneForPercent } from '@/shared/ui/primitives';
 import { WeakAreasCard } from '@/widgets/weak-areas/WeakAreasCard';
+import { VocabSummaryCard } from '@/widgets/vocab';
 import { GoalCard } from './GoalCard';
 import { RecentTests } from './RecentTests';
 
@@ -112,6 +113,8 @@ export function DashboardPage(): JSX.Element {
       ) : null}
 
       <WeakAreasCard topics={weak} titleOf={titleOf} />
+
+      <VocabSummaryCard />
 
       <RecentTests attempts={data.progress.attempts.slice(0, 6)} />
 

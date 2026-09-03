@@ -1,4 +1,6 @@
-import type { CategoryId, LevelContent, LevelMeta, Question, Topic } from './types';
+import type {
+  CategoryId, LevelContent, LevelMeta, Question, SoundGroup, Topic, VocabWord, VocabularyBank,
+} from './types';
 import { beginner } from './beginner';
 
 /**
@@ -69,6 +71,70 @@ export function getLevelIndex(levelId: string): LevelIndex | null {
 
 export function getLevelMeta(levelId: string): LevelMeta | undefined {
   return LEVELS.find((l) => l.id === levelId);
+}
+
+export interface VocabularyIndex {
+  bank: VocabularyBank;
+  byId: Map<string, VocabWord>;
+  /** Words per Sound Bank key, including the sounds listed in `also`. */
+  bySound: Map<string, VocabWord[]>;
+  byTopic: Map<string, VocabWord[]>;
+  byUnit: Map<string, VocabWord[]>;
+  soundByKey: Map<string, SoundGroup>;
+  /** Words that appear in a "different sound" question. */
+  soundTaskWords: VocabWord[];
+  /** Sounds this sound is contrasted with somewhere in the question bank. */
+  contrastsFor: (sound: string) => string[];
+}
+
+const vocabCache = new Map<string, VocabularyIndex>();
+
+function buildVocabularyIndex(bank: VocabularyBank): VocabularyIndex {
+  const byId = new Map<string, VocabWord>();
+  const bySound = new Map<string, VocabWord[]>();
+  const byTopic = new Map<string, VocabWord[]>();
+  const byUnit = new Map<string, VocabWord[]>();
+  const soundTaskWords: VocabWord[] = [];
+
+  for (const word of bank.words) {
+    byId.set(word.id, word);
+    push(byTopic, word.topicId, word);
+    push(byUnit, word.unitId, word);
+    for (const key of [word.sound, ...word.also]) if (key) push(bySound, key, word);
+    if (word.inSoundTask) soundTaskWords.push(word);
+  }
+
+  const contrast = new Map<string, string[]>();
+  for (const [a, b] of bank.contrasts) {
+    push(contrast, a, b);
+    push(contrast, b, a);
+  }
+
+  return {
+    bank,
+    byId,
+    bySound,
+    byTopic,
+    byUnit,
+    soundByKey: new Map(bank.sounds.map((s) => [s.key, s])),
+    soundTaskWords,
+    contrastsFor: (sound: string) => contrast.get(sound) ?? [],
+  };
+}
+
+/** Built once per level and cached, like the question index (Performance.md §1). */
+export function getVocabularyIndex(levelId: string): VocabularyIndex | null {
+  const cached = vocabCache.get(levelId);
+  if (cached) return cached;
+  const bank = CONTENT[levelId]?.vocabulary;
+  if (!bank) return null;
+  const index = buildVocabularyIndex(bank);
+  vocabCache.set(levelId, index);
+  return index;
+}
+
+export function hasVocabulary(levelId: string): boolean {
+  return CONTENT[levelId]?.vocabulary !== undefined;
 }
 
 export const DEFAULT_LEVEL_ID = beginner.meta.id;

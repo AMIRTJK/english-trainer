@@ -5,10 +5,13 @@ import { useLevelData } from '@/entities/topic/model/use-level-data';
 import { flushUser } from '@/entities/user/model/repository';
 import { buildExport, downloadJson, parseImport } from '@/features/manage-data/model/export-import';
 import { clearSession } from '@/features/run-test/model/session-store';
+import { clearVocab, exportVocab, flushVocab, replaceVocab } from '@/features/vocab-learning';
+import { useTheme } from '@/shared/lib/use-theme';
 import { storageAvailable } from '@/shared/storage/local-store';
 
 export default function SettingsPage(): JSX.Element {
   const { user, setActiveLevel, updateUser, replaceUser, clearEverything } = useApp();
+  const { theme, setTheme } = useTheme();
   const data = useLevelData();
   const fileRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<{ tone: 'ok' | 'warn'; text: string } | null>(null);
@@ -20,7 +23,11 @@ export default function SettingsPage(): JSX.Element {
 
   const onExport = (): void => {
     flushUser();
-    downloadJson(buildExport(user), `english-file-trainer-${new Date().toISOString().slice(0, 10)}.json`);
+    flushVocab();
+    downloadJson(
+      buildExport(user, exportVocab()),
+      `english-file-trainer-${new Date().toISOString().slice(0, 10)}.json`,
+    );
     setMessage({ tone: 'ok', text: 'Backup downloaded.' });
   };
 
@@ -33,6 +40,7 @@ export default function SettingsPage(): JSX.Element {
     }
     replaceUser(result.data);
     clearSession();
+    if (result.vocab) replaceVocab(result.vocab);
     setMessage({
       tone: result.warnings.length ? 'warn' : 'ok',
       text: result.warnings.length ? result.warnings.join(' ') : 'Backup restored.',
@@ -55,6 +63,31 @@ export default function SettingsPage(): JSX.Element {
           Export a backup before you leave.
         </div>
       ) : null}
+
+      <section className="card stack gap-16">
+        <h2>Appearance</h2>
+        <div className="stack gap-8">
+          <label className="small" htmlFor="theme-select">Theme mode</label>
+          <div className="row" style={{ gap: 8 }}>
+            {(
+              [
+                ['system', '💻 Auto (System)'],
+                ['light', '☀️ Light'],
+                ['dark', '🌙 Dark'],
+              ] as const
+            ).map(([mode, label]) => (
+              <button
+                key={mode}
+                type="button"
+                className={`btn btn-sm ${theme === mode ? 'btn-primary' : ''}`}
+                onClick={() => setTheme(mode)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="card stack gap-16">
         <h2>Profile</h2>
@@ -151,8 +184,8 @@ export default function SettingsPage(): JSX.Element {
       <section className="card stack gap-12">
         <h2>Clear all data</h2>
         <p className="small dim">
-          Removes your name, level, goals, settings, test history, mistakes and statistics
-          from this browser. This cannot be undone.
+          Removes your name, level, goals, settings, test history, mistakes, statistics
+          and vocabulary progress from this browser. This cannot be undone.
         </p>
         {confirmClear ? (
           <div className="stack gap-12">
@@ -163,7 +196,7 @@ export default function SettingsPage(): JSX.Element {
               <button className="btn" type="button" onClick={() => setConfirmClear(false)}>Cancel</button>
               <button
                 className="btn btn-danger" type="button"
-                onClick={() => { clearSession(); clearEverything(); }}
+                onClick={() => { clearSession(); clearVocab(); clearEverything(); }}
               >
                 Yes, delete everything
               </button>

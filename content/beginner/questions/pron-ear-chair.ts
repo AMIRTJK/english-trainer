@@ -1,7 +1,7 @@
 import type { Question } from '../../types';
 import { makeQuestions } from './build';
 
-const IPA: Record<string, string> = {
+export const EAR_CHAIR_IPA: Record<string, string> = {
   here: '/hɪə/', near: '/nɪə/', year: '/jɪə/', beer: '/bɪə/', "we're": '/wɪə/',
   really: '/ˈrɪəli/', idea: '/aɪˈdɪə/', cereal: '/ˈsɪəriəl/', hear: '/hɪə/',
   ear: '/ɪə/', where: '/weə/', there: '/ðeə/', their: '/ðeə/', chair: '/tʃeə/',
@@ -12,9 +12,9 @@ const IPA: Record<string, string> = {
 const P = 'Which word has a different sound?';
 
 /** [option words, index of the odd word, which sound the odd word has] */
-type Row = [[string, string, string], 0 | 1 | 2, 'ear' | 'chair'];
+export type EarChairRow = [[string, string, string], 0 | 1 | 2, 'ear' | 'chair'];
 
-const rows: Row[] = [
+export const earChairRows: EarChairRow[] = [
   [['here', 'where', 'near'], 1, 'chair'],
   [['chair', 'year', 'beer'], 0, 'chair'],
   [['there', 'their', 'here'], 2, 'ear'],
@@ -52,7 +52,7 @@ export const pronEarChair: Question[] = makeQuestions(
     source: { book: 'SB', page: 134, ref: 'Sound Bank — ear /ɪə/ and chair /eə/' },
     slug: 'ec',
   },
-  rows.map(([words, answer, odd]) => {
+  earChairRows.map(([words, answer, odd]) => {
     const others = odd === 'ear' ? 'chair' : 'ear';
     const oddSound = odd === 'ear' ? '/ɪə/ (ear)' : '/eə/ (chair)';
     const otherSound = odd === 'ear' ? '/eə/ (chair)' : '/ɪə/ (ear)';
@@ -67,7 +67,7 @@ export const pronEarChair: Question[] = makeQuestions(
       sound: {
         target: odd,
         others,
-        ipa: Object.fromEntries(words.map((w) => [w, IPA[key(w)] ?? ''])),
+        ipa: Object.fromEntries(words.map((w) => [w, EAR_CHAIR_IPA[key(w)] ?? ''])),
       },
     };
   }),

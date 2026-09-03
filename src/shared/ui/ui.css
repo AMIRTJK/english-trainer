@@ -80,3 +80,53 @@
   background: none; border: 0; padding: 0; color: var(--accent);
   cursor: pointer; font-weight: 550; text-decoration: underline;
 }
+
+.scroll-top-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 74px;
+  z-index: 25;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, transform .15s;
+  animation: scroll-btn-in .2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-top-btn:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+.scroll-top-btn:active {
+  transform: translateY(1px);
+}
+.scroll-top-icon {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@keyframes scroll-btn-in {
+  from { opacity: 0; transform: translateY(10px) scale(.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (min-width: 760px) {
+  .scroll-top-btn {
+    right: 28px;
+    bottom: 28px;
+    width: 44px;
+    height: 44px;
+  }
+}

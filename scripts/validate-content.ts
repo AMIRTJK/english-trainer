@@ -15,6 +15,7 @@
 import { LEVELS, getLevelIndex } from '../content/registry';
 import { unknownWords, wrongForms, wrongFormsIn } from '../content/beginner/lexicon';
 import type { Question } from '../content/types';
+import { validateVocabulary } from './validate-vocabulary';
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -156,6 +157,13 @@ function main(): void {
       `${level.name}: ${index.content.questions.length} verified questions, ` +
       `${index.content.topics.length} topics, ${index.byConstruct.size} constructs`,
     );
+
+    if (index.content.vocabulary) {
+      const report = validateVocabulary(level.id);
+      errors.push(...report.errors);
+      warnings.push(...report.warnings);
+      perLevel.push(`  vocabulary — ${report.summary}`);
+    }
   }
 
   console.log('\nContent validation');

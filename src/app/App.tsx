@@ -13,9 +13,11 @@ const ResultsPage = lazy(() => import('@/pages/results/ResultsPage'));
 const TopicsPage = lazy(() => import('@/pages/topics/TopicsPage'));
 const ProgressPage = lazy(() => import('@/pages/progress/ProgressPage'));
 const SettingsPage = lazy(() => import('@/pages/settings/SettingsPage'));
+const VocabularyPage = lazy(() => import('@/pages/vocabulary/VocabularyPage'));
+const LearnPage = lazy(() => import('@/pages/vocabulary/LearnPage'));
 
 function Loading(): JSX.Element {
-  return <div className="page dim">Loading…</div>;
+  return <div className="page dim" style={{ minHeight: '50vh', opacity: 0.5 }}>Loading…</div>;
 }
 
 function Router(): JSX.Element {
@@ -31,6 +33,8 @@ function Router(): JSX.Element {
           <Route path="/test/run" element={<TestRunnerPage />} />
           <Route path="/results/:attemptId" element={<ResultsPage />} />
           <Route path="/topics" element={<TopicsPage />} />
+          <Route path="/vocabulary" element={<VocabularyPage />} />
+          <Route path="/vocabulary/learn" element={<LearnPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

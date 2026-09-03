@@ -1,0 +1,96 @@
+/* Vocabulary screens. Uses the tokens from global.css, so Dark Mode follows. */
+
+.ipa {
+  font-family: 'Segoe UI', 'Noto Sans', system-ui, sans-serif;
+  color: var(--text-dim);
+  font-size: .92rem;
+  white-space: nowrap;
+}
+.ipa-key {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 0 2px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+}
+
+.sound-tag {
+  display: inline-flex; align-items: baseline; gap: 5px;
+  padding: 2px 8px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-dim);
+  font-size: .76rem; font-weight: 600; white-space: nowrap;
+}
+.sound-tag-key { color: var(--text-faint); font-weight: 500; }
+
+.status-new { color: var(--text-faint); }
+.status-learning { color: var(--warn); }
+.status-known { color: var(--good); }
+
+.speak-btn { padding: 6px 9px; }
+.speak-btn.is-speaking { border-color: var(--accent); color: var(--accent); }
+
+.word-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 4px; border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.word-row:last-child { border-bottom: 0; }
+.word-row.is-active { background: var(--accent-soft); border-radius: var(--radius-sm); }
+.word-row-main { flex: 1 1 auto; min-width: 0; }
+.word-row-head { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.word-en { font-weight: 600; }
+.word-ru { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.word-row-side { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+@media (max-width: 560px) {
+  .word-row { align-items: flex-start; flex-wrap: wrap; }
+  .word-row-side { width: 100%; justify-content: flex-start; padding-left: 46px; }
+}
+
+.vocab-toolbar { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+.chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface);
+  font-size: .8rem; font-weight: 600; color: var(--text-dim);
+}
+.chip:hover { background: var(--surface-2); }
+.chip.is-on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+.group-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+.flashcard { max-width: 620px; margin: 0 auto; width: 100%; }
+.flashcard-head { align-items: center; text-align: center; }
+.flashcard-word { font-size: 2.1rem; letter-spacing: -.02em; }
+.flashcard .ipa { font-size: 1.05rem; }
+.flashcard-ru { font-size: 1.15rem; font-weight: 600; text-align: center; }
+.flashcard-answer { min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.flashcard-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.syl-stress { font-weight: 700; color: var(--text); text-transform: uppercase; }
+
+.word-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.word-chip {
+  display: flex; align-items: center; gap: 7px;
+  padding: 4px 9px 4px 4px; border-radius: 999px;
+  background: var(--surface-2);
+}
+
+/* A card entering the deck. Respects prefers-reduced-motion via global.css. */
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.card-anim { animation: card-in .18s ease-out; }
+
+.sound-cell {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); text-align: left; cursor: pointer; width: 100%;
+}
+.sound-cell:hover { background: var(--surface-2); }
+.sound-cell.is-weak { border-color: var(--bad); }
+.sound-cell-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.sound-cell-ipa { font-weight: 700; font-size: 1.02rem; }

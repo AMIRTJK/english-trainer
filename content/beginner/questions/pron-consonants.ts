@@ -4,9 +4,9 @@ import { makeQuestions, type Draft } from './build';
 const SRC = { book: 'SB', page: 135, ref: 'Sound Bank — consonant sounds' } as const;
 
 /** [three words, index of the odd one, odd sound label, shared sound label, IPA per word] */
-type Row = [[string, string, string], 0 | 1 | 2, string, string, [string, string, string]];
+export type ConsonantRow = [[string, string, string], 0 | 1 | 2, string, string, [string, string, string]];
 
-const rows: Row[] = [
+export const consonantRows: ConsonantRow[] = [
   [['think', 'thanks', 'this'], 2, '/ð/ (mother)', '/θ/ (thumb)', ['/θɪŋk/', '/θæŋks/', '/ðɪs/']],
   [['father', 'the', 'birthday'], 2, '/θ/ (thumb)', '/ð/ (mother)', ['/ˈfɑːðə/', '/ðə/', '/ˈbɜːθdeɪ/']],
   [['month', 'Thursday', 'their'], 2, '/ð/ (mother)', '/θ/ (thumb)', ['/mʌnθ/', '/ˈθɜːzdeɪ/', '/ðeə/']],
@@ -41,7 +41,7 @@ const rows: Row[] = [
   [['time', 'tell', 'did'], 2, '/d/ (dog)', '/t/ (tie)', ['/taɪm/', '/tel/', '/dɪd/']],
 ];
 
-const drafts: Draft[] = rows.map(([words, answer, oddLabel, otherLabel, ipa]) => {
+const drafts: Draft[] = consonantRows.map(([words, answer, oddLabel, otherLabel, ipa]) => {
   const rest = words.filter((_, i) => i !== answer).join(' and ');
   return {
     q: 'Which word has a different sound?',

@@ -110,3 +110,82 @@ repeating items to pad it out (`PROJECT_SPEC.md` §10).
 
 `HashRouter` plus `base: './'` keeps the same build working at a domain root
 (Vercel) and in a repository sub-path (GitHub Pages) with no server rewrites.
+
+## 10. The Vocabulary word list is derived, not re-typed
+
+`vocabulary/*.json` is git-ignored, untrusted and not present in a clean clone,
+so the Vocabulary tab was built out of the material the repository already
+holds — a view over it, never a second dictionary:
+
+| Source already in the repo | What it gives |
+| --- | --- |
+| `questions/sound-table.ts` | vowel Sound Bank group + IPA for ~130 words |
+| `questions/pron-consonants.ts` | consonant group + IPA for ~78 words |
+| `questions/pron-ear-chair.ts` | /ɪə/–/eə/ group + IPA for 19 words |
+| `questions/stress-words.ts` | syllables and stressed syllable for 40 words |
+| `lexicon/vocabulary-bank.ts` etc. | the allowed headwords of the level |
+| `topics.ts`, `meta.ts` | the unit and topic a word belongs to |
+
+`content/beginner/vocabulary/derived.ts` joins those tables once at module init,
+so a word file usually carries **only the translation**: `['coffee', 'кофе']`.
+The Sound Bank group and the transcription are spelled out only where the
+existing tables do not cover the word.
+
+**Result: 553 words, 44 Sound Bank sounds, 26 sound contrasts.**
+
+### 10a. Russian translations and the missing transcriptions were written by hand
+
+This is the one thing the repository did not already contain. `AGENTS.md` §3
+forbids inventing *educational material* beyond the book; a gloss and an IPA
+transcription of a word that is already in the book are descriptions of that
+word, not new material, so they were added. The guard is mechanical: every
+headword must be in the level lexicon, so the word list cannot drift outside the
+book. `scripts/validate-vocabulary.ts` enforces that, plus a translation, an
+IPA, a real Sound Bank group, a real topic, no duplicate word, and that the
+group's symbol is actually visible in the transcription (otherwise the UI could
+not highlight it).
+
+### 10b. Sound contrasts are locked to the question bank
+
+`sounds.ts` lists the 26 pairs the "different sound" questions contrast.
+`tests/vocabulary-content.test.ts` walks every `different-sound` question and
+fails if a pair is missing, so the Vocabulary screen can never advertise a
+contrast the tests do not actually ask about. The same test asserts that every
+word those questions use is in the list; the two exceptions are `bags` and
+`cars`, deliberately left out as plural forms of `bag` and `car` rather than
+listed twice.
+
+## 11. Pronunciation uses the browser's Speech Synthesis API
+
+An external TTS service would add a network request per word and a dependency on
+a third party for a personal, offline-capable app. The Web Speech API costs
+nothing in the bundle (`Performance.md` §6), can repeat a word as often as
+wanted, and supports the sequential "compare these words" playback the sound
+groups need.
+
+**Known limit.** Voice quality is the browser's, not ours. A British voice is
+preferred (`en-GB`, then `en-AU`, `en-US`, any `en`), but on a machine with no
+English voice installed the buttons hide themselves rather than mispronounce.
+
+## 12. Vocabulary progress is stored under its own key
+
+Word learning is a different concern from test history, so it lives at
+`eft:v1:vocab` with its own schema version and its own debounced writer
+(`AGENTS.md` §4, `Performance.md` §5) — answering a card never rewrites the test
+profile. Both are included in the same export bundle; a backup made before this
+feature simply has no `vocab` field and imports fine.
+
+Repetition is a small Leitner scheme: boxes with 0/1/3/7/21-day intervals,
+"Не знаю" drops a word to box 0 (due immediately, so it returns this session and
+the next), and a word counts as learned from box 2. Per-sound counters are kept
+alongside the per-word ones, which is what lets the app say *"/æ/ needs work"*
+and offer the whole group for revision.
+
+## 13. The vocabulary data ships in the eagerly-loaded content chunk
+
+Measured: the content chunk grows from 104.50 kB to 127.62 kB raw
+(32.23 kB → 42.46 kB gzip), so the initial payload is about 105 kB gzip in
+total — comfortably inside the ~200 kB budget in `Performance.md` §6. Making the
+word list a lazily-imported chunk would turn `getVocabularyIndex` into an async
+call and force Suspense into the vocabulary screens; that complexity is not
+justified by 10 kB. Revisit if a second level's vocabulary is added.

@@ -2,9 +2,9 @@ import type { Question } from '../../types';
 import { makeQuestions, stressOption, type Draft } from './build';
 
 /** [word, syllables, stressed index, the three option positions, IPA] */
-type Row = [string, string[], number, [number, number, number], string];
+export type StressRow = [string, string[], number, [number, number, number], string];
 
-const rows: Row[] = [
+export const stressRows: StressRow[] = [
   ['wonderful', ['won', 'der', 'ful'], 0, [0, 1, 2], '/ˈwʌndəfl/'],
   ['detective', ['de', 'tec', 'tive'], 1, [0, 1, 2], '/dɪˈtektɪv/'],
   ['reception', ['re', 'cep', 'tion'], 1, [0, 1, 2], '/rɪˈsepʃn/'],
@@ -49,7 +49,7 @@ const rows: Row[] = [
 
 const ORD = ['first', 'second', 'third', 'fourth', 'fifth'];
 
-const drafts: Draft[] = rows.map(([word, syl, correct, picks, ipa]) => {
+const drafts: Draft[] = stressRows.map(([word, syl, correct, picks, ipa]) => {
   const options = picks.map((p) => stressOption(syl, p)) as [string, string, string];
   const answer = picks.indexOf(correct) as 0 | 1 | 2;
   return {

@@ -37,13 +37,16 @@ Every AI agent and human contributor must read this file before changing code.
 ├── test/                photos of the completed Quick Test — local only, git-ignored
 ├── content/             the verified educational content layer
 │   └── beginner/        one folder per level
+│       ├── lexicon/     the words the level is allowed to use
+│       ├── questions/   the question bank
+│       └── vocabulary/  the studied word list, derived from the two above
 ├── scripts/             build-time tooling (content validation)
 ├── src/
 │   ├── app/             providers, router, global styles
 │   ├── pages/           route-level screens
 │   ├── widgets/         composite blocks assembled from features/entities
 │   ├── features/        user scenarios (build a test, run a test, manage data)
-│   ├── entities/        business entities (level, topic, question, attempt, user)
+│   ├── entities/        business entities (level, topic, question, attempt, user, vocab)
 │   └── shared/          ui kit, lib helpers, config, storage
 └── tests/               unit tests
 ```
@@ -103,6 +106,11 @@ rather than inventing material.
 - Adding content is a two-step process: author it as `draft`/`needs_review`, then
   promote to `verified` only after `npm run lint:content` passes and the item has
   been checked against the book.
+- The vocabulary word list is a **view over existing content**, not a second
+  dictionary. A new word must already be in the level lexicon, must carry a
+  translation, an IPA transcription and a real Sound Bank group, and must appear
+  exactly once. `scripts/validate-vocabulary.ts` enforces all of that; see
+  `docs/decisions.md` §10.
 
 ## 4. Storage rules
 

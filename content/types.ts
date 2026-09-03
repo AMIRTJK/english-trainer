@@ -101,6 +101,65 @@ export interface LevelMeta {
   book: string;
 }
 
+
+/** How a Sound Bank sound behaves, used for grouping in the UI. */
+export type SoundType =
+  | 'short-vowel'
+  | 'long-vowel'
+  | 'diphthong'
+  | 'weak-vowel'
+  | 'consonant';
+
+/** One Sound Bank entry, e.g. `cat /æ/`. */
+export interface SoundGroup {
+  /** Sound Bank key word, e.g. 'cat'. Stable id used everywhere. */
+  key: string;
+  /** Bare IPA symbol without slashes, e.g. 'æ'. */
+  ipa: string;
+  type: SoundType;
+  /** Short Russian description of the sound. */
+  ru: string;
+}
+
+/** A pair of sounds the book asks the learner to tell apart. */
+export type SoundContrast = [string, string];
+
+/**
+ * One vocabulary item. The word list is not a second, independent dictionary:
+ * it is the book vocabulary already held in `content/<level>/`, joined with a
+ * Russian gloss. See `docs/decisions.md` §6.
+ */
+export interface VocabWord {
+  /** Stable id, e.g. `beg-w-coffee`. Never renumbered — progress refers to it. */
+  id: string;
+  levelId: string;
+  word: string;
+  /** Russian translation. */
+  ru: string;
+  /** Full IPA of the word, with slashes, e.g. `/ˈkɒfi/`. */
+  ipa: string;
+  unitId: string;
+  /** Vocabulary or pronunciation topic this word belongs to. */
+  topicId: string;
+  /** Primary Sound Bank key — the sound the book teaches this word for. */
+  sound: string;
+  /** Further Sound Bank keys the word illustrates (usually consonants). */
+  also: string[];
+  /** Syllables, when the book teaches this word's stress. */
+  syllables?: string[];
+  /** Index of the stressed syllable, when known. */
+  stressed?: number;
+  /** True when the word is used in a "different sound" question. */
+  inSoundTask: boolean;
+}
+
+export interface VocabularyBank {
+  levelId: string;
+  sounds: SoundGroup[];
+  contrasts: SoundContrast[];
+  words: VocabWord[];
+}
+
 export interface LevelContent {
   meta: LevelMeta;
   units: Unit[];
@@ -108,4 +167,6 @@ export interface LevelContent {
   questions: Question[];
   /** Every word form the level is allowed to use, lowercased. */
   lexicon: ReadonlySet<string>;
+  /** The studied word list. Absent while a level has no vocabulary data yet. */
+  vocabulary?: VocabularyBank;
 }

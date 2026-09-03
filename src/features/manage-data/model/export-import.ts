@@ -1,6 +1,7 @@
 import { getLevelMeta } from '@content/registry';
 import { SCHEMA_VERSION, type UserData } from '@/entities/user/model/types';
 import { migrate } from '@/entities/user/model/migrations';
+import type { VocabData } from '@/entities/vocab';
 
 export interface ExportBundle {
   format: 'english-file-trainer-export';
@@ -10,9 +11,11 @@ export interface ExportBundle {
   /** Content version per level, so an import can flag stale question ids. */
   contentVersions: Record<string, string>;
   data: UserData;
+  /** Vocabulary learning progress. Absent in backups made before it existed. */
+  vocab?: VocabData;
 }
 
-export function buildExport(data: UserData): ExportBundle {
+export function buildExport(data: UserData, vocab?: VocabData): ExportBundle {
   const contentVersions: Record<string, string> = {};
   for (const levelId of Object.keys(data.progress)) {
     contentVersions[levelId] = getLevelMeta(levelId)?.contentVersion ?? 'unknown';
@@ -24,12 +27,14 @@ export function buildExport(data: UserData): ExportBundle {
     schemaVersion: SCHEMA_VERSION,
     contentVersions,
     data,
+    ...(vocab ? { vocab } : {}),
   };
 }
 
 export interface ImportResult {
   ok: boolean;
   data?: UserData;
+  vocab?: VocabData;
   error?: string;
   warnings: string[];
 }
@@ -66,7 +71,7 @@ export function parseImport(text: string): ImportResult {
     }
   }
 
-  return { ok: true, data, warnings };
+  return { ok: true, data, warnings, ...(bundle.vocab ? { vocab: bundle.vocab } : {}) };
 }
 
 export function downloadJson(bundle: ExportBundle, filename: string): void {

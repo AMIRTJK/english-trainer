@@ -9,7 +9,7 @@ const SOUND_IPA: Record<string, string> = {
 };
 
 /** Each row: three words where exactly one has a different vowel sound. */
-const rows: Array<[string, string, string]> = [
+export const vowelRows: Array<[string, string, string]> = [
   ['six', 'three', 'film'], ['please', 'meet', 'window'], ['she', 'we', 'gym'],
   ['bag', 'park', 'black'], ['father', 'fast', 'thanks'], ['man', 'bad', 'are'],
   ['not', 'stop', 'no'], ['sorry', 'coffee', 'open'], ['watch', 'want', 'coat'],
@@ -29,7 +29,7 @@ const rows: Array<[string, string, string]> = [
   ['shirt', 'skirt', 'short'], ['go', 'photo', 'gym'], ['brown', 'shower', 'brother'],
 ];
 
-const drafts: Draft[] = rows.map((words) => {
+const drafts: Draft[] = vowelRows.map((words) => {
   const sounds = words.map((w) => SOUND_TABLE[w]?.[0] ?? '');
   const answer = sounds.findIndex((s, i) => sounds.filter((x) => x === s).length === 1 && i >= 0);
   const odd = sounds[answer] ?? '';

@@ -97,4 +97,5 @@ export function storageAvailable(): boolean {
 export const KEYS = {
   user: 'user',
   session: 'session',
+  vocab: 'vocab',
 } as const;

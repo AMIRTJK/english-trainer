@@ -25,6 +25,11 @@ npm run dev
   before there is enough evidence.
 - Progress split by level, section, topic, and — importantly — by whether the
   questions were new or already seen.
+- **A Vocabulary tab**: 553 words from the Student's Book with their Russian
+  translation, IPA, and Sound Bank group; grouped by unit, topic or sound;
+  spoken aloud one at a time or as a group to compare; and a flashcard mode
+  with spaced repetition that tracks both words and phonetic groups, so the
+  "which word has a different sound?" questions can be prepared for directly.
 
 ## Commands
 
@@ -61,7 +66,10 @@ The content gate (`npm run lint:content`) checks that:
 - a deliberately wrong form is never the correct answer;
 - "different sound" items really have one odd word and two matching ones;
 - word-stress syllables agree with the marked answer;
-- no question is a duplicate, and none is merely a reordering of another.
+- no question is a duplicate, and none is merely a reordering of another;
+- every vocabulary word is in the lexicon, is listed once, and has a translation,
+  a transcription and a Sound Bank group whose symbol appears in that
+  transcription.
 
 ## Deployment
 

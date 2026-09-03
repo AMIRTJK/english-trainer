@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { getLevelMeta } from '@content/registry';
+import { useTheme } from '@/shared/lib/use-theme';
+import { ScrollToTopButton } from '@/shared/ui/ScrollToTopButton';
 import { useApp } from './store/app-store';
 import './app-shell.css';
 
@@ -8,6 +10,7 @@ const NAV = [
   { to: '/', label: 'Dashboard', icon: '◧' },
   { to: '/tests', label: 'Tests', icon: '◆' },
   { to: '/topics', label: 'Topics', icon: '☰' },
+  { to: '/vocabulary', label: 'Vocabulary', icon: '📖' },
   { to: '/progress', label: 'Progress', icon: '◔' },
   { to: '/settings', label: 'Settings', icon: '⚙' },
 ];
@@ -15,7 +18,12 @@ const NAV = [
 export function AppShell({ children }: { children: ReactNode }): JSX.Element {
   const { user } = useApp();
   const location = useLocation();
+  const { theme, resolvedTheme, toggleTheme } = useTheme();
   const levelName = getLevelMeta(user?.profile.activeLevelId ?? '')?.name ?? '—';
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   // The test runner takes over the screen so nothing distracts from the paper.
   const bare = location.pathname === '/test/run';
@@ -30,7 +38,18 @@ export function AppShell({ children }: { children: ReactNode }): JSX.Element {
             <span className="brand">English File Trainer</span>
             <span className="pill pill-accent">{levelName}</span>
           </div>
-          <span className="small dim">{user?.profile.name}</span>
+          <div className="row" style={{ gap: 12 }}>
+            <button
+              type="button"
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={`Current theme: ${theme} (click to toggle)`}
+              aria-label="Toggle theme"
+            >
+              {resolvedTheme === 'dark' ? '☀️' : '🌙'}
+            </button>
+            <span className="small dim">{user?.profile.name}</span>
+          </div>
         </div>
       </header>
 
@@ -51,6 +70,7 @@ export function AppShell({ children }: { children: ReactNode }): JSX.Element {
       </nav>
 
       <main>{children}</main>
+      <ScrollToTopButton />
     </div>
   );
 }

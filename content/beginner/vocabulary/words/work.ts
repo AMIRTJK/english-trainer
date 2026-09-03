@@ -1,0 +1,65 @@
+import { makeWords, type WordGroup } from '../build';
+import type { VocabWord } from '../../../types';
+
+/** Jobs, places of work and a typical day — Vocabulary Bank SB pp.124-125. */
+const groups: WordGroup[] = [
+  {
+    topicId: 'beg-v-jobs-work',
+    unit: 6,
+    rows: [
+      ['job', 'работа, должность'],
+      ['doctor', 'врач', 'clock', '/ˈdɒktə/'],
+      ['nurse', 'медсестра'],
+      ['journalist', 'журналист', 'bird'],
+      ['waiter', 'официант', 'train', '/ˈweɪtə/'],
+      ['waitress', 'официантка', 'train', '/ˈweɪtrəs/'],
+      ['receptionist', 'администратор', 'egg'],
+      ['policeman', 'полицейский', 'tree'],
+      ['policewoman', 'женщина-полицейский', 'tree', '/pəˈliːswʊmən/'],
+      ['assistant', 'продавец-консультант', 'fish'],
+      ['actor', 'актёр', 'cat', '/ˈæktə/'],
+      ['actress', 'актриса', 'cat'],
+      ['driver', 'водитель', 'bike', '/ˈdraɪvə/'],
+      ['worker', 'рабочий', 'bird', '/ˈwɜːkə/'],
+      ['unemployed', 'безработный', 'boy'],
+      ['retired', 'на пенсии', 'bike', '/rɪˈtaɪəd/'],
+      ['hospital', 'больница', 'clock', '/ˈhɒspɪtl/'],
+      ['office', 'офис', 'clock'],
+      ['school', 'школа', 'boot', '/skuːl/'],
+      ['university', 'университет', 'bird'],
+      ['factory', 'завод', 'cat'],
+      ['company', 'компания', 'up', '/ˈkʌmpəni/'],
+      ['shop', 'магазин', 'clock'],
+      ['restaurant', 'ресторан', 'egg'],
+      ['street', 'улица', 'tree', '/striːt/'],
+      ['taxi', 'такси', 'cat', '/ˈtæksi/'],
+      ['economics', 'экономика', 'clock'],
+    ],
+  },
+  {
+    topicId: 'beg-v-typical-day',
+    unit: 6,
+    rows: [
+      ['shower', 'душ'],
+      ['bath', 'ванна', 'car', '/bɑːθ/'],
+      ['wash', 'мыть', 'clock', '/wɒʃ/'],
+      ['bed', 'кровать', 'egg', '/bed/'],
+      ['sleep', 'спать', 'tree', '/sliːp/'],
+      ['housework', 'работа по дому', 'owl', '/ˈhaʊswɜːk/'],
+      ['homework', 'домашнее задание', 'phone', '/ˈhəʊmwɜːk/'],
+      ['shopping', 'покупки', 'clock', '/ˈʃɒpɪŋ/'],
+      ['gym', 'спортзал'],
+      ['cinema', 'кинотеатр', 'fish'],
+      ['theatre', 'театр', 'ear', '/ˈθɪətə/'],
+      ['beach', 'пляж', 'tree', '/biːtʃ/'],
+      ['relax', 'отдыхать', 'cat', '/rɪˈlæks/'],
+      ['always', 'всегда', 'horse', '/ˈɔːlweɪz/'],
+      ['usually', 'обычно', 'boot', '/ˈjuːʒuəli/'],
+      ['sometimes', 'иногда', 'up', '/ˈsʌmtaɪmz/'],
+      ['often', 'часто', 'clock', '/ˈɒfn/'],
+      ['never', 'никогда', 'egg', '/ˈnevə/'],
+    ],
+  },
+];
+
+export const workWords: VocabWord[] = makeWords(groups);

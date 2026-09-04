@@ -6,6 +6,7 @@ export {
 export { countScope, selectWords, DEFAULT_SESSION_SIZE, type ScopeCounts } from './model/session';
 export { isDue, needsRepeat, weakSounds, BOX_INTERVAL_DAYS } from '@/entities/vocab';
 export { totals, soundSummaries, soundTaskReadiness } from './model/stats';
+export { WORDS_PER_PAGE, clampPage, paginateGroups } from './model/pagination';
 export {
   EMPTY_FILTER, filterWords, groupWords,
   type GroupBy, type GroupContext, type WordFilter, type WordGroupView,

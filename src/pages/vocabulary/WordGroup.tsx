@@ -6,7 +6,6 @@ import type { VocabLevelProgress, WordGroupView } from '@/features/vocab-learnin
 import { WordRow } from '@/widgets/vocab';
 import { scopeToParams } from './scope-params';
 
-const PREVIEW = 12;
 const COMPARE_LIMIT = 6;
 
 interface Props {
@@ -15,23 +14,23 @@ interface Props {
   progress: VocabLevelProgress;
 }
 
-/** One section of the word list, with its own compare and learn actions. */
+/**
+ * One section of the word list. It shows all of its words: the page itself is
+ * paginated, so a section is never long enough to need a second control.
+ */
 export function WordGroup({ group, soundByKey, progress }: Props): JSX.Element {
-  const [expanded, setExpanded] = useState(false);
   const [playing, setPlaying] = useState(-1);
-  const shown = expanded ? group.words : group.words.slice(0, PREVIEW);
   const compareWords = group.words.slice(0, COMPARE_LIMIT).map((w) => w.word);
 
   return (
-    <section className="card stack gap-12">
+    <section className="card stack gap-8">
       <div className="group-head">
-        <div>
-          <h2>{group.title}</h2>
-          <p className="tiny faint">{group.subtitle}</p>
-        </div>
+        <h2 className="group-title">
+          {group.title}
+          <span className="small dim mono-num"> · {group.words.length}</span>
+        </h2>
         <div className="row">
-          <span className="small dim mono-num">{group.words.length}</span>
-          <CompareButton words={compareWords} label="Play group" onIndex={setPlaying} />
+          <CompareButton words={compareWords} label="Play" onIndex={setPlaying} />
           <Link className="btn btn-sm" to={`/vocabulary/learn?${scopeToParams(group.scope)}`}>
             Learn
           </Link>
@@ -39,7 +38,7 @@ export function WordGroup({ group, soundByKey, progress }: Props): JSX.Element {
       </div>
 
       <div>
-        {shown.map((word, index) => (
+        {group.words.map((word, index) => (
           <WordRow
             key={word.id}
             word={word}
@@ -49,12 +48,6 @@ export function WordGroup({ group, soundByKey, progress }: Props): JSX.Element {
           />
         ))}
       </div>
-
-      {group.words.length > PREVIEW ? (
-        <button type="button" className="link-btn" onClick={() => setExpanded(!expanded)}>
-          {expanded ? 'Show less' : `Show all ${group.words.length} words`}
-        </button>
-      ) : null}
     </section>
   );
 }

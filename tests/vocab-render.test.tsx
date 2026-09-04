@@ -41,9 +41,11 @@ describe('the Vocabulary screens', () => {
     const html = render(<VocabularyPage />);
     expect(html).toContain('Vocabulary');
     expect(html).toContain('Sound Bank');
-    expect(html).toContain('coffee');
-    expect(html).toContain('кофе');
-    expect(html).toContain('ɒ');
+    // The first page is the /ɪ/ group, in book order.
+    expect(html).toContain('six');
+    expect(html).toContain('шесть');
+    expect(html).toContain('ɪ');
+    expect(html).toContain('page 1 of');
   });
 
   it('opens a learning session for a sound', () => {

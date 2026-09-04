@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import type { SoundSummary, SoundTaskReadiness, VocabTotals } from '@/features/vocab-learning';
-import { Bar, Stat } from '@/shared/ui/primitives';
+import { Bar } from '@/shared/ui/primitives';
 
 interface Props {
   totals: VocabTotals;
@@ -7,48 +8,66 @@ interface Props {
   readiness: SoundTaskReadiness;
 }
 
-/** Progress for words and for phonetic groups, shown side by side. */
+/**
+ * Progress in one line, with the breakdown behind a toggle.
+ *
+ * The numbers that matter every day are the three in the summary; the rest is
+ * detail the learner asks for rather than reads on every visit.
+ */
 export function VocabProgressPanel({ totals, sounds, readiness }: Props): JSX.Element {
-  const masteredSounds = sounds.filter((s) => s.total > 0 && s.percent >= 80).length;
-  const weakSounds = sounds.filter((s) => s.weak);
-  const groupsWithWords = sounds.filter((s) => s.total > 0).length;
+  const [open, setOpen] = useState(false);
+  const withWords = sounds.filter((s) => s.total > 0);
+  const mastered = withWords.filter((s) => s.percent >= 80).length;
+  const weak = sounds.filter((s) => s.weak);
 
   return (
-    <section className="stack gap-16">
-      <div className="grid grid-4">
-        <Stat label="Learned" value={`${totals.known} / ${totals.total}`} hint={`${totals.percent}% of the word list`} />
-        <Stat label="To repeat" value={totals.repeat} hint="marked “Don’t know”" />
-        <Stat label="Not studied" value={totals.fresh} hint="never seen in a card" />
-        <Stat label="Due today" value={totals.due} hint="interval has elapsed" />
+    <section className="card stack gap-12">
+      <div className="between">
+        <span className="small">
+          <strong className="mono-num">{totals.known} / {totals.total}</strong> words
+          <span className="dim"> · {totals.repeat} to repeat · sounds </span>
+          <strong className="mono-num">{mastered} / {withWords.length}</strong>
+        </span>
+        <button type="button" className="link-btn small" onClick={() => setOpen(!open)}>
+          {open ? 'Hide details' : 'Details'}
+        </button>
       </div>
+      <Bar percent={totals.percent} tone={totals.percent >= 60 ? 'good' : 'accent'} />
 
-      <div className="card stack gap-12">
-        <div className="between">
-          <h2>Sounds</h2>
-          <span className="small dim">{masteredSounds} / {groupsWithWords} groups at 80%+</span>
+      {open ? (
+        <div className="stack gap-12">
+          <hr className="divider" />
+          <div className="mini-stats">
+            {([
+              ['known', totals.known, 'Known', 'good'],
+              ['repeat', totals.repeat, 'To repeat', 'warn'],
+              ['fresh', totals.fresh, 'Not studied', 'neutral'],
+              ['due', totals.due, 'Due today', 'accent'],
+            ] as const).map(([key, value, label, tone]) => (
+              <div key={key} className={`mini-stat tone-${tone}${value === 0 ? ' is-zero' : ''}`}>
+                <span className="mini-stat-value mono-num">{value}</span>
+                <span className="mini-stat-label">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="stack gap-8">
+            <div className="between">
+              <span className="small">Ready for “which word has a different sound?”</span>
+              <span className="small dim mono-num">{readiness.known} / {readiness.total}</span>
+            </div>
+            <Bar percent={readiness.percent} tone={readiness.percent >= 70 ? 'good' : 'warn'} />
+          </div>
+
+          {weak.length > 0 ? (
+            <p className="small">
+              Needs work: {weak.map((s) => `/${s.sound.ipa}/`).join(', ')}
+            </p>
+          ) : (
+            <p className="small dim">No sound is failing yet.</p>
+          )}
         </div>
-        <Bar percent={groupsWithWords === 0 ? 0 : (masteredSounds / groupsWithWords) * 100} />
-        {weakSounds.length > 0 ? (
-          <p className="small">
-            Needs work:{' '}
-            {weakSounds.map((s) => `/${s.sound.ipa}/ (${s.sound.key})`).join(', ')}
-          </p>
-        ) : (
-          <p className="small dim">No sound is failing yet. Answer some cards to see this fill in.</p>
-        )}
-
-        <hr className="divider" />
-
-        <div className="between">
-          <h3>“Which word has a different sound?”</h3>
-          <span className="small dim mono-num">{readiness.known} / {readiness.total}</span>
-        </div>
-        <Bar percent={readiness.percent} tone={readiness.percent >= 70 ? 'good' : 'warn'} />
-        <p className="tiny faint">
-          Every word the pronunciation questions can ask about. Learning these prepares
-          you for that part of the test.
-        </p>
-      </div>
+      ) : null}
     </section>
   );
 }

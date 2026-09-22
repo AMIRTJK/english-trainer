@@ -16,6 +16,7 @@ import { LEVELS, getLevelIndex } from '../content/registry';
 import { unknownWords, wrongForms, wrongFormsIn } from '../content/beginner/lexicon';
 import type { Question } from '../content/types';
 import { validateVocabulary } from './validate-vocabulary';
+import { validateVowels } from './validate-vowels';
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -150,7 +151,12 @@ function main(): void {
       } else seenOptionSets.set(orderKey, q.id);
     }
 
-    const emptyTopics = index.content.topics.filter((t) => !(index.byTopic.get(t.id)?.length));
+    // A topic that groups words rather than questions is not empty: the two
+    // 'words to learn' pages of the book are word lists, nothing else.
+    const wordTopics = new Set((index.content.vocabulary?.words ?? []).map((w) => w.topicId));
+    const emptyTopics = index.content.topics.filter(
+      (t) => !(index.byTopic.get(t.id)?.length) && !wordTopics.has(t.id),
+    );
     for (const t of emptyTopics) warnings.push(`topic "${t.title}" (${t.id}) has no questions`);
 
     perLevel.push(
@@ -163,6 +169,13 @@ function main(): void {
       errors.push(...report.errors);
       warnings.push(...report.warnings);
       perLevel.push(`  vocabulary — ${report.summary}`);
+    }
+
+    if (index.content.vowels) {
+      const report = validateVowels(level.id);
+      errors.push(...report.errors);
+      warnings.push(...report.warnings);
+      perLevel.push(`  vowel sounds — ${report.summary}`);
     }
   }
 

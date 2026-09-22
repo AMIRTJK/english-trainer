@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { useVocabulary } from '@/features/vocab-learning';
+import { useVowels } from '@/features/vowel-sounds';
 import { Bar, Pill } from '@/shared/ui/primitives';
 
 /** Compact vocabulary progress for the dashboard. */
 export function VocabSummaryCard(): JSX.Element | null {
   const data = useVocabulary();
+  const vowels = useVowels();
   if (!data.hasVocabulary) return null;
 
-  const { totals, readiness } = data;
+  const { totals, spelling } = data;
 
   return (
     <section className="card stack gap-12">
@@ -22,13 +24,17 @@ export function VocabSummaryCard(): JSX.Element | null {
         {totals.repeat > 0
           ? `${totals.repeat} word${totals.repeat === 1 ? '' : 's'} to repeat`
           : 'Nothing waiting to be repeated'}
-        {' · '}
-        {readiness.percent}% ready for the “different sound” questions
+        {' · spelling '}
+        <strong className="mono-num">{spelling.known}/{spelling.total}</strong>
+        {vowels.hasVowels ? (
+          <>{' · vowel sounds '}<strong className="mono-num">{vowels.totals.percent}%</strong></>
+        ) : null}
       </p>
       <div className="row">
         <Link className="btn btn-sm" to="/vocabulary">Word list</Link>
         <Link className="btn btn-sm" to="/vocabulary/learn?scope=review">Repeat</Link>
-        <Link className="btn btn-sm" to="/vocabulary/learn?scope=sound-task">Sound practice</Link>
+        <Link className="btn btn-sm" to="/vocabulary/spelling?scope=all">Spelling</Link>
+        <Link className="btn btn-sm" to="/pronunciation">Vowel sounds</Link>
       </div>
     </section>
   );

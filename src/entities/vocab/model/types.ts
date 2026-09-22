@@ -22,14 +22,30 @@ export interface SoundProgress {
   unknown: number;
 }
 
+/**
+ * The three things a word can be practised for are three different skills, and
+ * a learner is routinely good at one and weak at another: they may recognise
+ * *beautiful* instantly, still misspell it, and still not hear its /uː/. So each
+ * skill keeps its own Leitner boxes rather than sharing one number.
+ */
+export type TrackId = 'words' | 'spelling' | 'vowels';
+
 export interface VocabLevelProgress {
   levelId: string;
+  /** Recognition: word → translation. */
   words: Record<string, WordProgress>;
+  /** Per Sound Bank sound, from the recognition cards. */
   sounds: Record<string, SoundProgress>;
+  /** Spelling: translation → typed word. Keyed by the same word ids. */
+  spelling: Record<string, WordProgress>;
+  /** Vowel sounds: keyed by the ids of `content/<level>/pronunciation`. */
+  vowels: Record<string, WordProgress>;
+  /** Per vowel, from the vowel-sound questions. */
+  vowelSounds: Record<string, SoundProgress>;
   updatedAt: string | null;
 }
 
-export const VOCAB_SCHEMA_VERSION = 1;
+export const VOCAB_SCHEMA_VERSION = 2;
 
 export interface VocabData {
   schemaVersion: number;
@@ -37,7 +53,15 @@ export interface VocabData {
 }
 
 export function createLevelProgress(levelId: string): VocabLevelProgress {
-  return { levelId, words: {}, sounds: {}, updatedAt: null };
+  return {
+    levelId,
+    words: {},
+    sounds: {},
+    spelling: {},
+    vowels: {},
+    vowelSounds: {},
+    updatedAt: null,
+  };
 }
 
 export function createVocabData(): VocabData {

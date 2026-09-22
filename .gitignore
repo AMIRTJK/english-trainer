@@ -20,3 +20,7 @@ dist/
 /books/
 /test/
 /vocabulary/
+
+# A course book dropped into docs/ for an authoring pass is source material too:
+# same copyright, same rule as /books/. Only what is derived from it is committed.
+/docs/*.pdf

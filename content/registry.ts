@@ -1,5 +1,6 @@
 import type {
   CategoryId, LevelContent, LevelMeta, Question, SoundGroup, Topic, VocabWord, VocabularyBank,
+  VowelBank, VowelSound, VowelWord,
 } from './types';
 import { beginner } from './beginner';
 
@@ -135,6 +136,62 @@ export function getVocabularyIndex(levelId: string): VocabularyIndex | null {
 
 export function hasVocabulary(levelId: string): boolean {
   return CONTENT[levelId]?.vocabulary !== undefined;
+}
+
+
+export interface VowelIndex {
+  bank: VowelBank;
+  byId: Map<string, VowelWord>;
+  /** Words per vowel, in book order. */
+  bySound: Map<string, VowelWord[]>;
+  /** Words per difficulty level: 1 regular spelling, 2 ambiguous, 3 exception. */
+  byLevel: Map<number, VowelWord[]>;
+  soundByKey: Map<string, VowelSound>;
+  /** The words that make a fair question (see ). */
+  askable: VowelWord[];
+}
+
+const vowelCache = new Map<string, VowelIndex>();
+
+function buildVowelIndex(bank: VowelBank): VowelIndex {
+  const byId = new Map<string, VowelWord>();
+  const bySound = new Map<string, VowelWord[]>();
+  const byLevel = new Map<number, VowelWord[]>();
+  const seen = new Map<string, number>();
+
+  for (const word of bank.words) {
+    byId.set(word.id, word);
+    push(bySound, word.sound, word);
+    push(byLevel, word.level, word);
+    const key = word.word.toLowerCase();
+    seen.set(key, (seen.get(key) ?? 0) + 1);
+  }
+
+  const askable = bank.words.filter((w) => seen.get(w.word.toLowerCase()) === 1);
+
+  return {
+    bank,
+    byId,
+    bySound,
+    byLevel,
+    soundByKey: new Map(bank.sounds.map((s) => [s.key, s])),
+    askable,
+  };
+}
+
+/** Built once per level and cached, like the other indexes (Performance.md §1). */
+export function getVowelIndex(levelId: string): VowelIndex | null {
+  const cached = vowelCache.get(levelId);
+  if (cached) return cached;
+  const bank = CONTENT[levelId]?.vowels;
+  if (!bank) return null;
+  const index = buildVowelIndex(bank);
+  vowelCache.set(levelId, index);
+  return index;
+}
+
+export function hasVowels(levelId: string): boolean {
+  return CONTENT[levelId]?.vowels !== undefined;
 }
 
 export const DEFAULT_LEVEL_ID = beginner.meta.id;

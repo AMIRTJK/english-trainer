@@ -169,4 +169,76 @@ export interface LevelContent {
   lexicon: ReadonlySet<string>;
   /** The studied word list. Absent while a level has no vocabulary data yet. */
   vocabulary?: VocabularyBank;
+  /** The Sound Bank Vowel sounds page. Absent while a level has no data yet. */
+  vowels?: VowelBank;
+}
+
+/* ------------------------------------------------------------------ *
+ * Vowel sounds (Sound Bank, SB p.134)
+ * ------------------------------------------------------------------ */
+
+/**
+ * One "usual spelling" row of the Vowel sounds page: the letters, the book's
+ * example words, and an optional footnote (the book's `*` = "especially before
+ * consonant + e").
+ */
+export interface SpellingPattern {
+  /** The letters as the book prints them, e.g. `ee`, `ar`, `a*`. */
+  letters: string;
+  /** The book's example words for this spelling, in book order. */
+  examples: string[];
+  /** Russian explanation of when these letters give this sound. */
+  ru: string;
+  /** True for the book's `*` rows: the letter is long before consonant + e. */
+  magicE?: boolean;
+}
+
+/**
+ * One vowel sound of the Sound Bank, with everything the page says about it.
+ *
+ * `key` is the Sound Bank key word (`tree`, `car`, …) so the sound joins up
+ * with `SoundGroup`. The two weak sounds the book prints without a key word
+ * use the keys `weak-i` and `weak-u`.
+ */
+export interface VowelSound {
+  key: string;
+  /** Bare IPA without slashes, e.g. `iː`. */
+  ipa: string;
+  type: SoundType;
+  /** Spelling rules, in book order. */
+  patterns: SpellingPattern[];
+  /** The book's "! but also" words: spelling gives no clue. */
+  exceptions: string[];
+  /** Short Russian description of the sound itself. */
+  ru: string;
+  /** Russian summary of how to spot this sound in writing. */
+  hint: string;
+}
+
+/** The Vowel sounds page as one bank. */
+export interface VowelBank {
+  levelId: string;
+  sounds: VowelSound[];
+  words: VowelWord[];
+}
+
+/** How hard it is to tell a word's vowel from its spelling. */
+export type VowelLevel = 1 | 2 | 3;
+
+/** One studied word of the Vowel sounds page. */
+export interface VowelWord {
+  /** Stable id, e.g. `beg-vs-window`. Progress refers to it. */
+  id: string;
+  levelId: string;
+  word: string;
+  /** Sound Bank key of its vowel. */
+  sound: string;
+  /** The spelling that explains it; `null` for an exception word. */
+  letters: string | null;
+  /**
+   * 1 — these letters only ever make this sound;
+   * 2 — the same letters make other sounds too, so the word must be known;
+   * 3 — the book's "! but also" list: the spelling is misleading.
+   */
+  level: VowelLevel;
 }

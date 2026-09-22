@@ -1,5 +1,8 @@
 import type { SoundGroup, VocabWord } from '@content/types';
-import { isDue, needsRepeat, type VocabLevelProgress, type WordStatus } from '@/entities/vocab';
+import {
+  isDue, needsRepeat,
+  type VocabLevelProgress, type WordProgress, type WordStatus,
+} from '@/entities/vocab';
 
 export interface VocabTotals {
   total: number;
@@ -17,9 +20,10 @@ function statusOf(progress: VocabLevelProgress, wordId: string): WordStatus {
   return progress.words[wordId]?.status ?? 'new';
 }
 
-export function totals(
+/** The same counts over any one skill's Leitner boxes. */
+export function trackTotals(
   words: readonly VocabWord[],
-  progress: VocabLevelProgress,
+  store: Record<string, WordProgress>,
   now: Date = new Date(),
 ): VocabTotals {
   let known = 0;
@@ -29,7 +33,7 @@ export function totals(
   let repeat = 0;
 
   for (const word of words) {
-    const stored = progress.words[word.id];
+    const stored = store[word.id];
     const status = stored?.status ?? 'new';
     if (status === 'known') known += 1;
     else if (status === 'learning') learning += 1;
@@ -48,6 +52,15 @@ export function totals(
     repeat,
     percent: total === 0 ? 0 : Math.round((known / total) * 100),
   };
+}
+
+/** Recognition progress over the whole word list. */
+export function totals(
+  words: readonly VocabWord[],
+  progress: VocabLevelProgress,
+  now: Date = new Date(),
+): VocabTotals {
+  return trackTotals(words, progress.words, now);
 }
 
 export interface SoundSummary {

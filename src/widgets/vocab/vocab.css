@@ -131,3 +131,53 @@
   display: flex; align-items: center; justify-content: center; gap: 12px;
   padding: 4px 0 8px;
 }
+
+/* --- Spelling drill ------------------------------------------------ */
+
+.tone-good { color: var(--good); font-weight: 600; }
+.tone-bad { color: var(--bad); font-weight: 600; }
+
+.spell-input {
+  font-size: 1.35rem;
+  letter-spacing: .04em;
+  text-align: center;
+  padding: 12px;
+}
+.spell-input.is-right { border-color: var(--good); background: var(--good-soft); }
+.spell-input.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+
+.spell-hint {
+  text-align: center;
+  font-size: 1.3rem;
+  letter-spacing: .28em;
+  color: var(--text-dim);
+}
+
+.spell-marks {
+  text-align: center;
+  font-size: 1.25rem;
+  letter-spacing: .06em;
+  word-break: break-word;
+}
+/* Colour is never the only signal (AGENTS.md §6): an extra letter is struck
+   through, a missing one is underlined and boxed. */
+.spell-mark.is-ok { color: var(--good); }
+.spell-mark.is-extra {
+  color: var(--bad);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.spell-mark.is-missing {
+  color: var(--warn);
+  background: var(--warn-soft);
+  border-bottom: 2px solid var(--warn);
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+.mistake-list { list-style: none; margin: 0; padding: 0; }
+.mistake-row {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding: 7px 2px; border-bottom: 1px solid var(--border);
+}
+.mistake-row:last-child { border-bottom: 0; }

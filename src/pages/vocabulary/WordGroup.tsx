@@ -34,6 +34,9 @@ export function WordGroup({ group, soundByKey, progress }: Props): JSX.Element {
           <Link className="btn btn-sm" to={`/vocabulary/learn?${scopeToParams(group.scope)}`}>
             Learn
           </Link>
+          <Link className="btn btn-sm" to={`/vocabulary/spelling?${scopeToParams(group.scope)}`}>
+            Spell
+          </Link>
         </div>
       </div>
 

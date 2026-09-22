@@ -23,7 +23,7 @@ const groups: WordGroup[] = [
       ['cheese', 'сыр'],
       ['sugar', 'сахар'],
       ['salt', 'соль', 'horse', '/sɔːlt/'],
-      ['sandwich', 'бутерброд', 'cat', '/ˈsænwɪdʒ/'],
+      ['sandwich', 'бутерброд', 'cat', '/ˈsænwɪtʃ/'],
       ['cereal', 'хлопья, каша'],
       ['chocolate', 'шоколад', 'clock', '/ˈtʃɒklət/'],
       ['coffee', 'кофе'],

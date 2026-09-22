@@ -3,7 +3,7 @@ import {
   VOCAB_SCHEMA_VERSION, createLevelProgress, createVocabData,
   type VocabData, type VocabLevelProgress,
 } from './types';
-import { recordAnswer, resetWord } from './srs';
+import { recordAnswer, recordSounds, recordTrackAnswer, resetWord } from './srs';
 
 /**
  * Vocabulary progress lives under its own storage key.
@@ -18,8 +18,20 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 let version = 0;
 const listeners = new Set<() => void>();
 
+/**
+ * v1 knew only the recognition track. v2 adds spelling and vowel sounds, so a
+ * profile saved before them simply starts those skills at zero — nothing is
+ * recomputed and nothing is lost.
+ */
 function migrate(raw: VocabData): VocabData {
   const data: VocabData = raw.levels ? raw : createVocabData();
+  for (const level of Object.values(data.levels)) {
+    level.words ??= {};
+    level.sounds ??= {};
+    level.spelling ??= {};
+    level.vowels ??= {};
+    level.vowelSounds ??= {};
+  }
   data.schemaVersion = VOCAB_SCHEMA_VERSION;
   return data;
 }
@@ -71,6 +83,34 @@ export function answerWord(
   now: Date = new Date(),
 ): void {
   recordAnswer(levelProgress(levelId), wordId, sounds, knew, now);
+  publish();
+}
+
+/** Record one typed answer in the spelling drill. */
+export function answerSpelling(
+  levelId: string,
+  wordId: string,
+  correct: boolean,
+  now: Date = new Date(),
+): void {
+  const progress = levelProgress(levelId);
+  recordTrackAnswer(progress.spelling, wordId, correct, now);
+  progress.updatedAt = now.toISOString();
+  publish();
+}
+
+/** Record one answer in the vowel-sound drill. */
+export function answerVowel(
+  levelId: string,
+  wordId: string,
+  sound: string,
+  correct: boolean,
+  now: Date = new Date(),
+): void {
+  const progress = levelProgress(levelId);
+  recordTrackAnswer(progress.vowels, wordId, correct, now);
+  recordSounds(progress.vowelSounds, [sound], correct);
+  progress.updatedAt = now.toISOString();
   publish();
 }
 

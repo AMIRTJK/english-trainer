@@ -2,6 +2,7 @@ import { functionWords } from './function-words';
 import { names, moreNames } from './names';
 import { vocabularyBank, exerciseWords, extraWords, extraWords2 } from './vocabulary-bank';
 import { pronunciationWords } from './pronunciation-words';
+import { wordsToLearn } from './words-to-learn';
 import { deliberateErrors } from './deliberate-errors';
 
 /** Build the allowed-word set once at module init (see Performance.md §1). */
@@ -25,6 +26,7 @@ export const lexicon: ReadonlySet<string> = toSet(
   exerciseWords,
   extraWords,
   extraWords2,
+  wordsToLearn,
 );
 
 /** Forms that are wrong on purpose. They may only ever appear as a distractor. */

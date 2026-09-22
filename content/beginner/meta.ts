@@ -6,7 +6,7 @@ export const meta: LevelMeta = {
   id: BEGINNER_LEVEL_ID,
   name: 'Beginner',
   order: 1,
-  contentVersion: '1.0.0',
+  contentVersion: '1.1.0',
   book: "English File 4th edition Beginner (Student's Book & Workbook)",
 };
 

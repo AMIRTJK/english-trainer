@@ -48,6 +48,8 @@ const vocabulary: Row[] = [
   ['hotels', 10, 'Hotels', 'a hotel room and places in a hotel'],
   ['prepositions-place', 10, 'Prepositions: in, on, at, under', 'prepositions of place'],
   ['the-time', 5, 'The time', 'telling the time'],
+  ['words-to-learn', 1, 'Words and phrases to learn', 'the per-lesson word lists, SB pp.131-132'],
+  ['verbs', 11, 'Regular and irregular verbs', 'the verb list, SB p.133'],
 ];
 
 const pronunciation: Row[] = [

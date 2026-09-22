@@ -79,6 +79,9 @@ export default function VocabularyPage(): JSX.Element {
           <Link className="btn btn-sm" to={`/vocabulary/learn?${scopeToParams({ kind: 'all' })}`}>
             Learn
           </Link>
+          <Link className="btn btn-sm" to={`/vocabulary/spelling?${scopeToParams({ kind: 'all' })}`}>
+            Spelling
+          </Link>
         </div>
       </header>
 

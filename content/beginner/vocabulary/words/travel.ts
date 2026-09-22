@@ -74,6 +74,7 @@ const groups: WordGroup[] = [
       ['single', 'одноместный', 'fish'],
       ['supermarket', 'супермаркет', 'boot', '/ˈsuːpəmɑːkɪt/'],
       ['bank', 'банк', 'cat', '/bæŋk/'],
+      ['gift', 'подарок', 'fish', '/gɪft/'],
     ],
   },
   {

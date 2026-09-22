@@ -71,6 +71,8 @@ const groups: WordGroup[] = [
       ['umbrella', 'зонт'],
       ['newspaper', 'газета', 'boot'],
       ['money', 'деньги', 'up', '/ˈmʌni/'],
+      ['ID', 'удостоверение личности', 'tree', '/ˌaɪ ˈdiː/'],
+      ['debit', 'дебетовый', 'egg', '/ˈdebɪt/'],
     ],
   },
 ];

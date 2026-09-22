@@ -34,6 +34,7 @@ const groups: WordGroup[] = [
       ['street', 'улица', 'tree', '/striːt/'],
       ['taxi', 'такси', 'cat', '/ˈtæksi/'],
       ['economics', 'экономика', 'clock'],
+      ['moment', 'момент', 'phone', '/ˈməʊmənt/'],
     ],
   },
   {

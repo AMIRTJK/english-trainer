@@ -60,6 +60,13 @@ export default function LearnPage(): JSX.Element {
     // reshuffle the queue underneath the learner.
   }, [index, scope, seed, includeKnown]);
 
+  // A new queue is a new session: see SpellingPage for why this is needed.
+  useEffect(() => {
+    setPosition(0);
+    setRevealed(false);
+    setResult({ known: 0, unknown: 0 });
+  }, [queue]);
+
   const names = useMemo(() => {
     const map = new Map<string, string>();
     for (const unit of data.units) map.set(unit.id, `Unit ${unit.number}`);
@@ -76,12 +83,10 @@ export default function LearnPage(): JSX.Element {
     );
   }
 
+  // The new seed rebuilds the queue, and the effect above clears the round.
   const restart = (again = includeKnown): void => {
     setIncludeKnown(again);
     setSeed(randomSeed());
-    setPosition(0);
-    setRevealed(false);
-    setResult({ known: 0, unknown: 0 });
   };
 
   if (queue.length === 0) {

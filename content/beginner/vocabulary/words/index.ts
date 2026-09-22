@@ -8,6 +8,9 @@ import { leisureWords } from './leisure';
 import { travelWords } from './travel';
 import { soundBankWords } from './sound-bank';
 import { soundPracticeWords } from './sound-practice';
+import { toLearn1to6 } from './to-learn-1-6';
+import { toLearn7to12 } from './to-learn-7-12';
+import { verbWords } from './verbs';
 
 /** Every word of the Beginner vocabulary, in book order. */
 export const words: VocabWord[] = [
@@ -20,4 +23,7 @@ export const words: VocabWord[] = [
   ...travelWords,
   ...soundBankWords,
   ...soundPracticeWords,
+  ...toLearn1to6,
+  ...toLearn7to12,
+  ...verbWords,
 ];

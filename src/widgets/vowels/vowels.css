@@ -1,0 +1,91 @@
+/* Vowel sounds screens. Uses the tokens from global.css, so Dark Mode follows. */
+
+.vowel-letters {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 0 3px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+code.vowel-letters { font-size: 1rem; letter-spacing: .04em; }
+
+/* --- Question card -------------------------------------------------- */
+
+.vowel-options {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.vowel-option {
+  width: 100%;
+  display: flex; align-items: baseline; justify-content: center; gap: 8px; flex-wrap: wrap;
+  padding: 14px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--text);
+  cursor: pointer;
+}
+.vowel-option:hover:not(:disabled) { background: var(--surface-2); border-color: var(--accent); }
+.vowel-option:disabled { cursor: default; }
+.vowel-option-ipa { font-size: 1.35rem; font-weight: 700; }
+/* Correct and chosen are marked with a word and a border, not colour alone. */
+.vowel-option.is-right { border-color: var(--good); background: var(--good-soft); }
+.vowel-option.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.vowel-option.is-wrong .vowel-option-ipa { text-decoration: line-through; }
+.vowel-option.is-dim { opacity: .55; }
+
+.why-box {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.word-chips-plain {
+  color: var(--text-dim);
+  font-size: .95rem;
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+/* --- Reference table ------------------------------------------------ */
+
+.vowel-row { border-bottom: 1px solid var(--border); }
+.vowel-row:last-child { border-bottom: 0; }
+.vowel-row.is-weak .vowel-row-ipa { color: var(--bad); }
+
+.vowel-row-head {
+  width: 100%;
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 9px 2px;
+  background: none; border: 0; cursor: pointer;
+  color: var(--text); text-align: left;
+}
+.vowel-row-head:hover { background: var(--surface-2); border-radius: var(--radius-sm); }
+.vowel-row-ipa { font-size: 1.1rem; font-weight: 700; min-width: 3.2em; }
+.vowel-row-key { font-weight: 600; min-width: 5.5em; }
+.vowel-row-hint { flex: 1 1 auto; min-width: 0; }
+.vowel-row-body { padding: 4px 2px 14px; }
+
+.vowel-pattern {
+  border-left: 3px solid var(--border);
+  padding: 8px 0 8px 12px;
+}
+.vowel-pattern.is-exception { border-left-color: var(--warn); }
+
+@media (max-width: 620px) {
+  .vowel-row-hint { display: none; }
+  .vowel-row-key { min-width: 4.5em; }
+}
+
+/* --- Level bands ----------------------------------------------------- */
+
+.vowel-band.is-locked { opacity: .65; }
+.vowel-band-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.5em; height: 1.5em; margin-right: 4px;
+  border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+  font-size: .8rem; font-weight: 700;
+}

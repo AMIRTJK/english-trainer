@@ -5,8 +5,26 @@ import {
   type SessionScope, type VocabLevelProgress, type WordProgress,
 } from '@/entities/vocab';
 
+/**
+ * Which skill the session drills.
+ *
+ * Recognition and spelling ask about the same words but are different skills
+ * with their own Leitner boxes, so the queue has to be built from the right
+ * store: a word can be 'known' to read and still due for spelling.
+ */
+export type Track = 'words' | 'spelling';
+
+function storeOf(
+  progress: VocabLevelProgress,
+  track: Track,
+): Record<string, WordProgress> {
+  return track === 'spelling' ? progress.spelling : progress.words;
+}
+
 export interface SessionOptions {
   scope: SessionScope;
+  /** Which skill to build the queue for. Defaults to recognition. */
+  track?: Track;
   /** How many cards one session holds. */
   limit?: number;
   now?: Date;
@@ -22,7 +40,7 @@ export const DEFAULT_SESSION_SIZE = 20;
 function matchesScope(
   word: VocabWord,
   scope: SessionScope,
-  progress: VocabLevelProgress,
+  store: Record<string, WordProgress>,
   now: Date,
   contrastsFor: (sound: string) => string[],
 ): boolean {
@@ -42,7 +60,7 @@ function matchesScope(
     case 'sound-task':
       return word.inSoundTask;
     case 'review': {
-      const stored = progress.words[word.id];
+      const stored = store[word.id];
       return needsRepeat(stored) || (stored !== undefined && isDue(stored, now));
     }
   }
@@ -87,10 +105,12 @@ export function selectWords(
   const rng = createRng(options.seed ?? 1);
   const contrastsFor = options.contrastsFor ?? (() => []);
 
+  const store = storeOf(progress, options.track ?? 'words');
+
   const buckets: Record<Bucket, VocabWord[]> = { repeat: [], due: [], fresh: [], known: [] };
   for (const word of words) {
-    if (!matchesScope(word, options.scope, progress, now, contrastsFor)) continue;
-    buckets[bucketOf(progress.words[word.id], now)].push(word);
+    if (!matchesScope(word, options.scope, store, now, contrastsFor)) continue;
+    buckets[bucketOf(store[word.id], now)].push(word);
   }
 
   const ordered = [
@@ -120,12 +140,14 @@ export function countScope(
   scope: SessionScope,
   now: Date = new Date(),
   contrastsFor: (sound: string) => string[] = () => [],
+  track: Track = 'words',
 ): ScopeCounts {
   const counts: ScopeCounts = { total: 0, repeat: 0, due: 0, fresh: 0, known: 0 };
+  const store = storeOf(progress, track);
   for (const word of words) {
-    if (!matchesScope(word, scope, progress, now, contrastsFor)) continue;
+    if (!matchesScope(word, scope, store, now, contrastsFor)) continue;
     counts.total += 1;
-    counts[bucketOf(progress.words[word.id], now)] += 1;
+    counts[bucketOf(store[word.id], now)] += 1;
   }
   return counts;
 }

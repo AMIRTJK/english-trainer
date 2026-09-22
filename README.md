@@ -25,11 +25,21 @@ npm run dev
   before there is enough evidence.
 - Progress split by level, section, topic, and — importantly — by whether the
   questions were new or already seen.
-- **A Vocabulary tab**: 553 words from the Student's Book with their Russian
+- **A Vocabulary tab**: 777 words from the Student's Book with their Russian
   translation, IPA, and Sound Bank group; grouped by unit, topic or sound;
   spoken aloud one at a time or as a group to compare; and a flashcard mode
   with spaced repetition that tracks both words and phonetic groups, so the
   "which word has a different sound?" questions can be prepared for directly.
+- **A Spelling drill**: the translation is shown and the word is typed. Wrong
+  answers are marked letter by letter, hints reveal the word one letter at a
+  time, and capitals count where the book insists on them (*Brazil*, *Monday*).
+  Spelling keeps its own spaced-repetition boxes, separate from recognition.
+- **A Vowel sounds trainer** built from the Sound Bank page (SB p.134): all 22
+  vowels, their spelling rules and all 147 words the page prints. Questions are
+  ordered by how much the spelling gives away — first letters that only ever
+  make one sound, then letters that make several, then the book’s "! but also"
+  exceptions — and every answer is followed by *why* that sound, which other
+  sounds those letters can make, and the words that behave the same way.
 
 ## Commands
 
@@ -39,7 +49,7 @@ npm run dev
 | `npm run build` | Production build into `dist/` |
 | `npm run typecheck` | TypeScript project check |
 | `npm run lint:size` | Enforces the 250-line file limit |
-| `npm run lint:content` | Validates every question against the lexicon and rules |
+| `npm run lint:content` | Validates every question, word and vowel against the lexicon and rules |
 | `npm run test` | Unit tests |
 | `npm run verify` | All of the above, in order |
 
@@ -69,7 +79,9 @@ The content gate (`npm run lint:content`) checks that:
 - no question is a duplicate, and none is merely a reordering of another;
 - every vocabulary word is in the lexicon, is listed once, and has a translation,
   a transcription and a Sound Bank group whose symbol appears in that
-  transcription.
+  transcription;
+- every word of the Vowel sounds page is in the lexicon, every vowel is a real
+  Sound Bank sound, and its IPA agrees with the Sound Bank entry of the same key.
 
 ## Deployment
 

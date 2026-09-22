@@ -15,6 +15,9 @@ const ProgressPage = lazy(() => import('@/pages/progress/ProgressPage'));
 const SettingsPage = lazy(() => import('@/pages/settings/SettingsPage'));
 const VocabularyPage = lazy(() => import('@/pages/vocabulary/VocabularyPage'));
 const LearnPage = lazy(() => import('@/pages/vocabulary/LearnPage'));
+const SpellingPage = lazy(() => import('@/pages/vocabulary/SpellingPage'));
+const PronunciationPage = lazy(() => import('@/pages/pronunciation/PronunciationPage'));
+const VowelTrainerPage = lazy(() => import('@/pages/pronunciation/VowelTrainerPage'));
 
 function Loading(): JSX.Element {
   return <div className="page dim" style={{ minHeight: '50vh', opacity: 0.5 }}>Loading…</div>;
@@ -35,6 +38,9 @@ function Router(): JSX.Element {
           <Route path="/topics" element={<TopicsPage />} />
           <Route path="/vocabulary" element={<VocabularyPage />} />
           <Route path="/vocabulary/learn" element={<LearnPage />} />
+          <Route path="/vocabulary/spelling" element={<SpellingPage />} />
+          <Route path="/pronunciation" element={<PronunciationPage />} />
+          <Route path="/pronunciation/train" element={<VowelTrainerPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

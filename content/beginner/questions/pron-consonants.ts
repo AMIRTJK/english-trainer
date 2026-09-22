@@ -21,7 +21,7 @@ export const consonantRows: ConsonantRow[] = [
   [['watch', 'match', 'finish'], 2, '/ʃ/ (shower)', '/tʃ/ (chess)', ['/wɒtʃ/', '/mætʃ/', '/ˈfɪnɪʃ/']],
   [['Japan', 'job', 'chess'], 2, '/tʃ/ (chess)', '/dʒ/ (jazz)', ['/dʒəˈpæn/', '/dʒɒb/', '/tʃes/']],
   [['juice', 'bridge', 'lunch'], 2, '/tʃ/ (chess)', '/dʒ/ (jazz)', ['/dʒuːs/', '/brɪdʒ/', '/lʌntʃ/']],
-  [['sugar', 'sure', 'sit'], 2, '/s/ (snake)', '/ʃ/ (shower)', ['/ˈʃʊgə/', '/ʃɔː/', '/sɪt/']],
+  [['sugar', 'sure', 'sit'], 2, '/s/ (snake)', '/ʃ/ (shower)', ['/ˈʃʊgə/', '/ʃʊə/', '/sɪt/']],
 
   [['colour', 'clock', 'green'], 2, '/g/ (girl)', '/k/ (key)', ['/ˈkʌlə/', '/klɒk/', '/griːn/']],
   [['big', 'blog', 'back'], 2, '/k/ (key)', '/g/ (girl)', ['/bɪg/', '/blɒg/', '/bæk/']],

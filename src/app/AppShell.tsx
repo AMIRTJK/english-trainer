@@ -11,6 +11,7 @@ const NAV = [
   { to: '/tests', label: 'Tests', icon: '◆' },
   { to: '/topics', label: 'Topics', icon: '☰' },
   { to: '/vocabulary', label: 'Vocabulary', icon: '📖' },
+  { to: '/pronunciation', label: 'Sounds', icon: '🗣' },
   { to: '/progress', label: 'Progress', icon: '◔' },
   { to: '/settings', label: 'Settings', icon: '⚙' },
 ];

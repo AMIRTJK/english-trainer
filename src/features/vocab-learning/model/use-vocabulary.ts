@@ -5,7 +5,10 @@ import { useActiveLevelId } from '@/app/store/app-store';
 import {
   getVersion, levelProgress, subscribe, type VocabLevelProgress,
 } from '@/entities/vocab';
-import { soundSummaries, soundTaskReadiness, totals, type SoundSummary, type SoundTaskReadiness, type VocabTotals } from './stats';
+import {
+  soundSummaries, soundTaskReadiness, totals, trackTotals,
+  type SoundSummary, type SoundTaskReadiness, type VocabTotals,
+} from './stats';
 
 export interface VocabularyData {
   levelId: string;
@@ -16,6 +19,8 @@ export interface VocabularyData {
   topics: readonly Topic[];
   progress: VocabLevelProgress;
   totals: VocabTotals;
+  /** The same counts for the spelling drill, which has its own boxes. */
+  spelling: VocabTotals;
   sounds: SoundSummary[];
   readiness: SoundTaskReadiness;
 }
@@ -44,6 +49,7 @@ export function useVocabulary(): VocabularyData {
       topics: level?.content.topics ?? [],
       progress,
       totals: totals(words, progress),
+      spelling: trackTotals(words, progress.spelling),
       sounds: index ? soundSummaries(index.bank.sounds, index.bySound, progress) : [],
       readiness: soundTaskReadiness(index?.soundTaskWords ?? [], progress),
     };

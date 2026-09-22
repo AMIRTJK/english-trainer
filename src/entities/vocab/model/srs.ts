@@ -8,12 +8,19 @@ import { createWordProgress } from './types';
  * reappears in this session and the next one. "Знаю" promotes it, and each box
  * waits longer before asking again. A word counts as learned from box 2 on,
  * which is the first box whose interval survives a break of a few days.
+ *
+ * The same scheme drives all three skills (recognition, spelling, vowel sound);
+ * only the record store differs, which is why the primitives below take the
+ * store rather than reaching into `VocabLevelProgress` themselves.
  */
 export const BOX_INTERVAL_DAYS: readonly number[] = [0, 1, 3, 7, 21];
 export const KNOWN_FROM_BOX = 2;
 export const MAX_BOX = BOX_INTERVAL_DAYS.length - 1;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+export type WordStore = Record<string, WordProgress>;
+export type SoundStore = Record<string, SoundProgress>;
 
 function dueDate(box: number, now: Date): string {
   const days = BOX_INTERVAL_DAYS[Math.min(box, MAX_BOX)] ?? 0;
@@ -27,31 +34,30 @@ export function getWordProgress(
   return progress.words[wordId];
 }
 
-function ensureWord(progress: VocabLevelProgress, wordId: string): WordProgress {
-  const existing = progress.words[wordId];
+function ensureWord(store: WordStore, wordId: string): WordProgress {
+  const existing = store[wordId];
   if (existing) return existing;
   const created = createWordProgress(wordId);
-  progress.words[wordId] = created;
+  store[wordId] = created;
   return created;
 }
 
-function ensureSound(progress: VocabLevelProgress, sound: string): SoundProgress {
-  const existing = progress.sounds[sound];
+function ensureSound(store: SoundStore, sound: string): SoundProgress {
+  const existing = store[sound];
   if (existing) return existing;
   const created: SoundProgress = { sound, known: 0, unknown: 0 };
-  progress.sounds[sound] = created;
+  store[sound] = created;
   return created;
 }
 
-/** Statistics are updated in place, one word at a time (Performance.md §4). */
-export function recordAnswer(
-  progress: VocabLevelProgress,
+/** Move one word through the boxes. Mutates in place (Performance.md §4). */
+export function recordTrackAnswer(
+  store: WordStore,
   wordId: string,
-  sounds: readonly string[],
   knew: boolean,
   now: Date = new Date(),
 ): WordProgress {
-  const word = ensureWord(progress, wordId);
+  const word = ensureWord(store, wordId);
   word.seen += 1;
   word.lastSeenAt = now.toISOString();
 
@@ -65,14 +71,33 @@ export function recordAnswer(
     word.status = 'learning';
   }
   word.dueAt = dueDate(word.box, now);
+  return word;
+}
 
+/** Fold one answer into the per-sound counters. */
+export function recordSounds(
+  store: SoundStore,
+  sounds: readonly string[],
+  knew: boolean,
+): void {
   for (const sound of sounds) {
     if (!sound) continue;
-    const stat = ensureSound(progress, sound);
+    const stat = ensureSound(store, sound);
     if (knew) stat.known += 1;
     else stat.unknown += 1;
   }
+}
 
+/** Record one recognition answer ("Знаю" / "Не знаю") for a vocabulary word. */
+export function recordAnswer(
+  progress: VocabLevelProgress,
+  wordId: string,
+  sounds: readonly string[],
+  knew: boolean,
+  now: Date = new Date(),
+): WordProgress {
+  const word = recordTrackAnswer(progress.words, wordId, knew, now);
+  recordSounds(progress.sounds, sounds, knew);
   progress.updatedAt = now.toISOString();
   return word;
 }
@@ -91,7 +116,12 @@ export function needsRepeat(word: WordProgress | undefined): boolean {
 
 /** Sound groups where the learner misses more than they get right. */
 export function weakSounds(progress: VocabLevelProgress, minAnswers = 3): SoundProgress[] {
-  return Object.values(progress.sounds)
+  return weakOf(progress.sounds, minAnswers);
+}
+
+/** Sounds of any store the learner misses more than they get right. */
+export function weakOf(store: SoundStore, minAnswers = 3): SoundProgress[] {
+  return Object.values(store)
     .filter((s) => s.known + s.unknown >= minAnswers && s.unknown > 0)
     .sort((a, b) => {
       const ratio = (s: SoundProgress): number => s.known / (s.known + s.unknown);

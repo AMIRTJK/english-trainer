@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { SoundType } from '@content/types';
-import { CompareButton } from '@/features/pronounce';
+import { CompareButton, SoundButton } from '@/features/pronounce';
 import type { VowelSoundRow } from '@/features/vowel-sounds';
 import { Bar } from '@/shared/ui/primitives';
 
@@ -60,7 +60,10 @@ export function VowelSoundTable({ rows, openKey = null }: Props): JSX.Element {
                   {isOpen ? (
                     <div className="vowel-row-body stack gap-12">
                       <Bar percent={row.percent} tone={row.percent >= 70 ? 'good' : 'accent'} />
-                      <p className="small dim">{row.sound.ru}</p>
+                      <div className="between">
+                        <p className="small dim">{row.sound.ru}</p>
+                        <SoundButton ipa={row.sound.ipa} label="Just the sound" long compact />
+                      </div>
 
                       {row.sound.patterns.map((pattern) => (
                         <div key={pattern.letters} className="vowel-pattern stack gap-8">

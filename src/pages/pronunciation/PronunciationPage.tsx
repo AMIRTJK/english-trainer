@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UNLOCK_AT, useVowels } from '@/features/vowel-sounds';
-import { VowelLevelCard, VowelSoundTable } from '@/widgets/vowels';
+import { VowelLevelCard, VowelSoundChart, VowelSoundTable } from '@/widgets/vowels';
 import { Bar, Empty, Stat } from '@/shared/ui/primitives';
 
+type Panel = 'none' | 'chart' | 'table';
+
 /**
- * The Vowel sounds hub: how far the learner has got, the three difficulty
- * bands, and SB p.134 itself as a reference.
+ * The Vowel sounds hub: the sounds themselves, how far the learner has got, the
+ * three difficulty bands, and SB p.134 as a reference.
  */
 export default function PronunciationPage(): JSX.Element {
   const data = useVowels();
-  const [showTable, setShowTable] = useState(false);
+  const [panel, setPanel] = useState<Panel>('none');
 
   if (!data.hasVowels || !data.index) {
     return (
@@ -22,6 +24,7 @@ export default function PronunciationPage(): JSX.Element {
 
   const { totals, bands, weak } = data;
   const unlockPercent = Math.round(UNLOCK_AT * 100);
+  const toggle = (next: Panel): void => setPanel(panel === next ? 'none' : next);
 
   return (
     <div className="page stack gap-16">
@@ -76,14 +79,28 @@ export default function PronunciationPage(): JSX.Element {
       ) : null}
 
       <div className="row">
-        <button type="button" className="btn" onClick={() => setShowTable(!showTable)}>
-          {showTable ? 'Hide the Sound Bank page' : 'Show the Sound Bank page'}
+        <button
+          type="button"
+          className={`btn${panel === 'chart' ? ' btn-primary' : ''}`}
+          aria-pressed={panel === 'chart'}
+          onClick={() => toggle('chart')}
+        >
+          🔉 Listen to the sounds
+        </button>
+        <button
+          type="button"
+          className={`btn${panel === 'table' ? ' btn-primary' : ''}`}
+          aria-pressed={panel === 'table'}
+          onClick={() => toggle('table')}
+        >
+          Sound Bank page
         </button>
         <Link className="btn" to="/vocabulary">Vocabulary</Link>
         <Link className="btn" to="/vocabulary/spelling">Spelling</Link>
       </div>
 
-      {showTable ? <VowelSoundTable rows={data.rows} /> : null}
+      {panel === 'chart' ? <VowelSoundChart sounds={data.index.bank.sounds} /> : null}
+      {panel === 'table' ? <VowelSoundTable rows={data.rows} /> : null}
     </div>
   );
 }

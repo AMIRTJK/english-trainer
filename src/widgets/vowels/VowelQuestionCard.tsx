@@ -1,5 +1,5 @@
 import type { VowelQuestion } from '@/features/vowel-sounds';
-import { CompareButton, SpeakButton } from '@/features/pronounce';
+import { CompareButton, SoundButton, SpeakButton } from '@/features/pronounce';
 
 interface Props {
   question: VowelQuestion;
@@ -78,9 +78,12 @@ export function VowelQuestionCard({ question, picked, onPick, onNext }: Props): 
 
       {answered ? (
         <div className="stack gap-12" aria-live="polite">
-          <p className={`small ${right ? 'tone-good' : 'tone-bad'}`}>
-            {right ? '✓ Верно' : '✗ Правильный ответ'}: /{sound.ipa}/ — {sound.ru}
-          </p>
+          <div className="between">
+            <p className={`small ${right ? 'tone-good' : 'tone-bad'}`}>
+              {right ? '✓ Верно' : '✗ Правильный ответ'}: /{sound.ipa}/ — {sound.ru}
+            </p>
+            <SoundButton ipa={sound.ipa} label="Just the sound" long compact />
+          </div>
 
           <section className="stack gap-8 why-box">
             <h3 className="small">Почему именно этот звук</h3>

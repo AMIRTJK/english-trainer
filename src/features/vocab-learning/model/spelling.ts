@@ -27,6 +27,8 @@ export interface SpellingResult {
   marks: LetterMark[];
   /** How many single-letter edits away the answer was. 0 when correct. */
   distance: number;
+  /** Whether the answer is a minor typo (1-2 edits) rather than a completely different word. */
+  isTypo: boolean;
 }
 
 /** Straighten curly apostrophes and collapse whitespace; nothing else. */
@@ -34,14 +36,54 @@ export function normalise(value: string): string {
   return value.replace(/’/g, "'").replace(/\s+/g, ' ').trim();
 }
 
+/** Damerau-Levenshtein distance (insertions, deletions, substitutions, adjacent transpositions). */
+export function damerauLevenshtein(a: string, b: string): number {
+  const al = a.length;
+  const bl = b.length;
+  if (al === 0) return bl;
+  if (bl === 0) return al;
+
+  const d: number[][] = Array.from({ length: al + 1 }, () => new Array<number>(bl + 1).fill(0));
+  for (let i = 0; i <= al; i++) d[i]![0] = i;
+  for (let j = 0; j <= bl; j++) d[0]![j] = j;
+
+  for (let i = 1; i <= al; i++) {
+    for (let j = 1; j <= bl; j++) {
+      const cost = a[i - 1]?.toLowerCase() === b[j - 1]?.toLowerCase() ? 0 : 1;
+      d[i]![j] = Math.min(d[i - 1]![j]! + 1, d[i]![j - 1]! + 1, d[i - 1]![j - 1]! + cost);
+      if (i > 1 && j > 1 && a[i - 1]?.toLowerCase() === b[j - 2]?.toLowerCase() &&
+          a[i - 2]?.toLowerCase() === b[j - 1]?.toLowerCase()) {
+        d[i]![j] = Math.min(d[i]![j]!, d[i - 2]![j - 2]! + 1);
+      }
+    }
+  }
+  return d[al]![bl]!;
+}
+
 /**
- * Align `typed` with `target` and mark every letter.
- *
- * Longest common subsequence: cheap at this size and, unlike a naive
- * position-by-position comparison, it survives a missing or an extra letter
- * without reporting every following letter as wrong.
+ * Checks whether an answer is a small typo (1-2 edits) rather than an entirely different word.
  */
-export function alignLetters(typed: string, target: string): LetterMark[] {
+export function isTypo(typed: string, target: string): boolean {
+  const clean = normalise(typed).toLowerCase();
+  const want = normalise(target).toLowerCase();
+  if (!clean || clean === want) return false;
+  const dist = damerauLevenshtein(clean, want);
+  if (want.length <= 3) return dist === 1;
+  return dist <= 2;
+}
+
+export interface AlignedDiff {
+  typedMarks: LetterMark[];
+  targetMarks: LetterMark[];
+  mergedMarks: LetterMark[];
+}
+
+/**
+ * Aligns typed answer against target, producing separate letter arrays for each line
+ * so the learner's answer and the correct answer are never merged into one line,
+ * as well as a merged array for backwards compatibility.
+ */
+export function alignDiff(typed: string, target: string): AlignedDiff {
   const a = [...typed];
   const b = [...target];
   const table: number[][] = Array.from({ length: a.length + 1 }, () =>
@@ -58,25 +100,54 @@ export function alignLetters(typed: string, target: string): LetterMark[] {
     }
   }
 
-  const marks: LetterMark[] = [];
+  const typedMarks: LetterMark[] = [];
+  const targetMarks: LetterMark[] = [];
+  const mergedMarks: LetterMark[] = [];
   let i = 0;
   let j = 0;
   while (i < a.length && j < b.length) {
     if (a[i]?.toLowerCase() === b[j]?.toLowerCase()) {
-      marks.push({ char: b[j] as string, state: 'ok' });
+      const char = b[j] as string;
+      typedMarks.push({ char: a[i] as string, state: 'ok' });
+      targetMarks.push({ char, state: 'ok' });
+      mergedMarks.push({ char, state: 'ok' });
       i += 1;
       j += 1;
     } else if ((table[i + 1]?.[j] ?? 0) >= (table[i]?.[j + 1] ?? 0)) {
-      marks.push({ char: a[i] as string, state: 'extra' });
+      const char = a[i] as string;
+      typedMarks.push({ char, state: 'extra' });
+      mergedMarks.push({ char, state: 'extra' });
       i += 1;
     } else {
-      marks.push({ char: b[j] as string, state: 'missing' });
+      const char = b[j] as string;
+      targetMarks.push({ char, state: 'missing' });
+      mergedMarks.push({ char, state: 'missing' });
       j += 1;
     }
   }
-  while (i < a.length) marks.push({ char: a[i++] as string, state: 'extra' });
-  while (j < b.length) marks.push({ char: b[j++] as string, state: 'missing' });
-  return marks;
+  while (i < a.length) {
+    const char = a[i++] as string;
+    typedMarks.push({ char, state: 'extra' });
+    mergedMarks.push({ char, state: 'extra' });
+  }
+  while (j < b.length) {
+    const char = b[j++] as string;
+    targetMarks.push({ char, state: 'missing' });
+    mergedMarks.push({ char, state: 'missing' });
+  }
+
+  return { typedMarks, targetMarks, mergedMarks };
+}
+
+/**
+ * Align `typed` with `target` and mark every letter.
+ *
+ * Longest common subsequence: cheap at this size and, unlike a naive
+ * position-by-position comparison, it survives a missing or an extra letter
+ * without reporting every following letter as wrong.
+ */
+export function alignLetters(typed: string, target: string): LetterMark[] {
+  return alignDiff(typed, target).mergedMarks;
 }
 
 /**
@@ -104,6 +175,7 @@ export function checkSpelling(typed: string, target: string): SpellingResult {
     target: want,
     marks,
     distance: marks.filter((m) => m.state !== 'ok').length,
+    isTypo: isTypo(clean, want),
   };
 }
 

@@ -14,8 +14,9 @@ export {
   type GroupBy, type GroupContext, type WordFilter, type WordGroupView,
 } from './model/grouping';
 export {
-  alignLetters, checkSpelling, hintFor, hintsLeft, normalise, summariseRound, HINTED_NOTE,
-  type LetterMark, type LetterState, type SpellingAnswer, type SpellingResult,
+  alignDiff, alignLetters, checkSpelling, damerauLevenshtein, hintFor, hintsLeft, isTypo,
+  normalise, summariseRound, HINTED_NOTE,
+  type AlignedDiff, type LetterMark, type LetterState, type SpellingAnswer, type SpellingResult,
   type SpellingReview,
 } from './model/spelling';
 export type { SoundSummary, SoundTaskReadiness, VocabTotals } from './model/stats';

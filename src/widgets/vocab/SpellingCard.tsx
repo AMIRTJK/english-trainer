@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { SoundGroup, VocabWord } from '@content/types';
 import { SpeakButton } from '@/features/pronounce';
-import type { SpellingResult } from '@/features/vocab-learning';
+import { alignDiff, type SpellingResult } from '@/features/vocab-learning';
 import { IpaText } from './IpaText';
 
 interface Props {
@@ -21,16 +21,53 @@ interface Props {
   onNext: () => void;
 }
 
-/** The typed answer, letter by letter, against the correct spelling. */
-function Marks({ result }: { result: SpellingResult }): JSX.Element {
+/**
+ * Two clear rows: what was typed vs what was expected.
+ * In a typo, individual missing or extra letters are marked.
+ * For an entirely different word, words are shown cleanly without character-level mashup.
+ */
+function SpellingFeedback({ result }: { result: SpellingResult }): JSX.Element {
+  if (result.correct) return <></>;
+
+  if (result.isTypo || result.caseOnly) {
+    const { typedMarks, targetMarks } = alignDiff(result.typed, result.target);
+    return (
+      <div className="spell-feedback stack gap-8" aria-label="Comparison">
+        <div className="spell-feedback-row">
+          <span className="spell-feedback-label">Your answer:</span>
+          <span className="spell-feedback-value spell-feedback-typed">
+            {typedMarks.map((m, index) => (
+              <span key={`typed-${m.char}-${index}`} className={`spell-mark is-${m.state}`}>
+                {m.char === ' ' ? ' ' : m.char}
+              </span>
+            ))}
+          </span>
+        </div>
+        <div className="spell-feedback-row">
+          <span className="spell-feedback-label">Correct:</span>
+          <span className="spell-feedback-value spell-feedback-target">
+            {targetMarks.map((m, index) => (
+              <span key={`target-${m.char}-${index}`} className={`spell-mark is-${m.state}`}>
+                {m.char === ' ' ? ' ' : m.char}
+              </span>
+            ))}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <p className="spell-marks" aria-label={`Correct spelling: ${result.target}`}>
-      {result.marks.map((mark, index) => (
-        <span key={`${mark.char}-${index}`} className={`spell-mark is-${mark.state}`}>
-          {mark.char === ' ' ? ' ' : mark.char}
-        </span>
-      ))}
-    </p>
+    <div className="spell-feedback stack gap-8" aria-label="Comparison">
+      <div className="spell-feedback-row">
+        <span className="spell-feedback-label">Your answer:</span>
+        <span className="spell-feedback-value spell-wrong-full">{result.typed}</span>
+      </div>
+      <div className="spell-feedback-row">
+        <span className="spell-feedback-label">Correct:</span>
+        <span className="spell-feedback-value spell-correct-full">{result.target}</span>
+      </div>
+    </div>
   );
 }
 
@@ -39,7 +76,7 @@ function verdict(result: SpellingResult, hinted: boolean): string {
   // plainly why a right answer is still coming back.
   if (result.correct) return hinted ? 'Correct — but with a hint, so it comes back' : 'Correct';
   if (result.caseOnly) return 'Almost — this word needs a capital letter';
-  if (result.distance === 1) return 'One letter out';
+  if (result.isTypo) return result.distance <= 1 ? 'Almost — just one letter out' : 'Almost — typo';
   return 'Not quite';
 }
 
@@ -112,7 +149,7 @@ export function SpellingCard({
             <p className={`small ${result.correct && !hinted ? 'tone-good' : 'tone-bad'}`}>
               {result.correct ? '✓ ' : '✗ '}{verdict(result, hinted)}
             </p>
-            <Marks result={result} />
+            <SpellingFeedback result={result} />
             <p className="small dim">
               <strong>{word.word}</strong>{' '}
               <IpaText ipa={word.ipa} soundIpa={sound?.ipa} /> — «{word.ru}»

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  alignLetters, checkSpelling, hintFor, hintsLeft, normalise, summariseRound, HINTED_NOTE,
+  alignDiff, alignLetters, checkSpelling, damerauLevenshtein, hintFor, hintsLeft, isTypo,
+  normalise, summariseRound, HINTED_NOTE,
   type SpellingAnswer,
 } from '@/features/vocab-learning';
 
@@ -36,6 +37,7 @@ describe('checkSpelling', () => {
     const result = checkSpelling('teh', 'the');
     expect(result.correct).toBe(false);
     expect(result.distance).toBeGreaterThan(0);
+    expect(result.isTypo).toBe(true);
   });
 
   it('reports a missing letter without spoiling the rest of the word', () => {
@@ -43,6 +45,46 @@ describe('checkSpelling', () => {
     expect(result.correct).toBe(false);
     expect(result.marks.filter((m) => m.state === 'missing').map((m) => m.char)).toEqual(['a']);
     expect(result.marks.filter((m) => m.state === 'extra')).toHaveLength(0);
+    expect(result.isTypo).toBe(true);
+  });
+
+  it('identifies completely wrong answers as not typos', () => {
+    const result = checkSpelling('bathroom', 'toilet');
+    expect(result.correct).toBe(false);
+    expect(result.isTypo).toBe(false);
+  });
+});
+
+describe('damerauLevenshtein & isTypo', () => {
+  it('detects single insertion, deletion, substitution, and transposition', () => {
+    expect(damerauLevenshtein('tolet', 'toilet')).toBe(1);
+    expect(damerauLevenshtein('toilett', 'toilet')).toBe(1);
+    expect(damerauLevenshtein('toilat', 'toilet')).toBe(1);
+    expect(damerauLevenshtein('teh', 'the')).toBe(1);
+  });
+
+  it('distinguishes minor typos from completely different words', () => {
+    expect(isTypo('tolet', 'toilet')).toBe(true);
+    expect(isTypo('toilett', 'toilet')).toBe(true);
+    expect(isTypo('teh', 'the')).toBe(true);
+    expect(isTypo('bathroom', 'toilet')).toBe(false);
+    expect(isTypo('abc', 'xyz')).toBe(false);
+  });
+});
+
+describe('alignDiff', () => {
+  it('separates typed and target letters cleanly without mashup', () => {
+    const { typedMarks, targetMarks } = alignDiff('tolet', 'toilet');
+    expect(typedMarks.map((m) => m.char).join('')).toBe('tolet');
+    expect(typedMarks.every((m) => m.state === 'ok')).toBe(true);
+    expect(targetMarks.map((m) => m.char).join('')).toBe('toilet');
+    expect(targetMarks.find((m) => m.char === 'i')?.state).toBe('missing');
+  });
+
+  it('marks extra characters on typed without polluting target', () => {
+    const { typedMarks, targetMarks } = alignDiff('toilett', 'toilet');
+    expect(typedMarks.find((m) => m.state === 'extra')?.char).toBe('t');
+    expect(targetMarks.every((m) => m.state === 'ok')).toBe(true);
   });
 });
 

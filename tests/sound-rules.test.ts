@@ -2,20 +2,33 @@ import { describe, expect, it } from 'vitest';
 import { getLevelIndex } from '@content/registry';
 import { confusableSounds, vowelSounds, vowelWords } from '@content/beginner/pronunciation';
 import { pronRules } from '@content/beginner/questions/pron-rules';
-import { pronVowelWords } from '@content/beginner/questions/pron-vowel-words';
-import { vowelRows } from '@content/beginner/questions/pron-vowels';
+import { pronVowels, vowelRows } from '@content/beginner/questions/pron-vowels';
+import { SOUND_TABLE } from '@content/beginner/questions/sound-table';
 import { earChairRows } from '@content/beginner/questions/pron-ear-chair';
 
 const norm = (word: string): string => word.toLowerCase().replace(/’/g, "'");
 
+/**
+ * The words of SB p.134 whose taught sound is **not** their only vowel, with
+ * every vowel they contain.
+ *
+ * These are the words the page teaches for a weak or unstressed sound, so a row
+ * built from them cannot rely on "compare the stressed vowel" the way an
+ * ordinary row does. They get the stricter rule checked below.
+ */
+const VOWELS_IN: Record<string, string[]> = {
+  sister: ['ɪ', 'ə'], actor: ['æ', 'ə'], famous: ['eɪ', 'ə'], about: ['ə', 'aʊ'],
+  policeman: ['ə', 'iː'], umbrella: ['ʌ', 'e', 'ə'], excuse: ['ɪ', 'uː'],
+  turkey: ['ɜː', 'i'], euro: ['ʊə', 'əʊ'], europe: ['ʊə', 'ə'], plural: ['ʊə', 'ə'],
+  happy: ['æ', 'i'], angry: ['æ', 'i'], hungry: ['ʌ', 'i'],
+  usually: ['uː', 'u', 'ə', 'i'], situation: ['ɪ', 'u', 'eɪ'],
+  education: ['e', 'u', 'eɪ'],
+};
+
 describe('the Vowel sounds test covers the whole of SB p.134', () => {
-  /** Every word the test can show, across both of its question families. */
   const asked = new Set<string>();
   for (const row of vowelRows) for (const word of row) asked.add(norm(word));
   for (const [row] of earChairRows) for (const word of row) asked.add(norm(word));
-  for (const question of pronVowelWords) {
-    for (const option of question.options) asked.add(norm(option));
-  }
 
   it('asks about every word the page prints', () => {
     for (const word of vowelWords) {
@@ -29,14 +42,41 @@ describe('the Vowel sounds test covers the whole of SB p.134', () => {
     }
   });
 
-  it('never asks "which is different?" about a word with a second vowel', () => {
-    // `sister` is /ə/ on the page but starts with /ɪ/, so an odd-one-out row
-    // built from it would have two defensible answers.
-    const twoVowelWords = ['sister', 'actor', 'famous', 'about', 'policeman',
-      'euro', 'europe', 'plural', 'happy', 'angry', 'hungry',
-      'usually', 'situation', 'education', 'umbrella', 'excuse', 'turkey'];
-    const inRows = new Set(vowelRows.flat().map(norm));
-    for (const word of twoVowelWords) expect(inRows.has(word), word).toBe(false);
+  it('only ever asks "which word has a different sound?"', () => {
+    // The exam has one pronunciation format, so the test has one too.
+    for (const question of pronVowels) {
+      expect(question.type).toBe('different-sound');
+      expect(question.prompt).toBe('Which word has a different sound?');
+    }
+  });
+
+  it('leaves one defensible odd word in every weak-vowel row', () => {
+    const vowelsOf = (word: string): string[] => {
+      const key = norm(word);
+      const listed = VOWELS_IN[key];
+      if (listed) return listed;
+      // Any other word is compared on the vowel its Sound Bank row teaches.
+      const sound = vowelSounds.find((s) => s.key === SOUND_TABLE[key]?.[0]);
+      return sound ? [sound.ipa] : [];
+    };
+
+    const weakRows = vowelRows.filter((row) => row.some((w) => VOWELS_IN[norm(w)]));
+    // Every word of the group is in one of them, and the rule below is what
+    // makes those rows answerable.
+    const inWeakRows = new Set(weakRows.flat().map(norm));
+    for (const word of Object.keys(VOWELS_IN)) expect(inWeakRows.has(word), word).toBe(true);
+
+    for (const row of weakRows) {
+      const sets = row.map((word) => new Set(vowelsOf(word)));
+      const shares = (a: number, b: number): boolean =>
+        [...(sets[a] as Set<string>)].some((v) => (sets[b] as Set<string>).has(v));
+
+      // Exactly one pair of the three words may share a vowel — any vowel, not
+      // just the taught one — so the third word is the only answer the row
+      // admits however the learner listens to it.
+      const pairs: Array<[number, number]> = [[0, 1], [0, 2], [1, 2]];
+      expect(pairs.filter(([a, b]) => shares(a, b)).length, row.join(', ')).toBe(1);
+    }
   });
 });
 

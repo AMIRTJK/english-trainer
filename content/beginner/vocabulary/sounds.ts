@@ -78,7 +78,11 @@ export const contrasts: SoundContrast[] = [
   ['train', 'bike'], ['phone', 'owl'], ['phone', 'fish'], ['owl', 'up'],
   ['boy', 'clock'], ['ear', 'chair'],
   // Added with the rows that finished SB p.134 (docs/decisions.md §18).
+  // The two weak vowels of the page are not Sound Bank sounds (§14a), so the
+  // pairs that contrast them are deliberately absent from this list.
   ['train', 'fish'], ['bike', 'tree'], ['tourist', 'horse'],
+  ['computer', 'bull'], ['computer', 'fish'], ['tourist', 'fish'],
+  ['tourist', 'cat'], ['boot', 'cat'], ['bird', 'clock'],
   ['thumb', 'mother'], ['snake', 'zebra'], ['snake', 'shower'],
   ['shower', 'chess'], ['chess', 'jazz'], ['jazz', 'yacht'],
   ['key', 'girl'], ['nose', 'singer'], ['flower', 'vase'],

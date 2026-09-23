@@ -50,10 +50,12 @@ describe('the Beginner vocabulary bank', () => {
     );
     for (const question of level?.content.questions ?? []) {
       if (question.type !== 'different-sound' || !question.sound) continue;
-      const pair = [soundKey(question.sound.target), soundKey(question.sound.others)]
-        .sort()
-        .join('|');
-      expect(listed.has(pair), pair).toBe(true);
+      const keys = [soundKey(question.sound.target), soundKey(question.sound.others)];
+      // The list exists so the Vocabulary screen never promises practice the
+      // tests do not give, and that screen speaks about the 44 Sound Bank
+      // sounds. The two weak vowels of SB p.134 are not among them (§14a).
+      if (keys.some((key) => key.startsWith('weak-'))) continue;
+      expect(listed.has(keys.sort().join('|')), keys.join('|')).toBe(true);
     }
   });
 

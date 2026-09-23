@@ -2,7 +2,7 @@ import type { Question } from '../../types';
 import { makeQuestions, type Draft } from './build';
 import { SOUND_TABLE } from './sound-table';
 
-export const SOUND_IPA: Record<string, string> = {
+const SOUND_IPA: Record<string, string> = {
   fish: '/ɪ/', tree: '/iː/', cat: '/æ/', car: '/ɑː/', clock: '/ɒ/', horse: '/ɔː/',
   bull: '/ʊ/', boot: '/uː/', bird: '/ɜː/', egg: '/e/', up: '/ʌ/', train: '/eɪ/',
   phone: '/əʊ/', bike: '/aɪ/', owl: '/aʊ/', boy: '/ɔɪ/',
@@ -10,13 +10,18 @@ export const SOUND_IPA: Record<string, string> = {
 };
 
 /**
- * Each row: three words where exactly one has a different vowel sound.
+ * Each row: three words where exactly one has a different vowel sound. This is
+ * the only format the test uses — it is the format of the exam paper.
  *
- * A word only belongs here if every vowel it contains is the sound of its row —
- * otherwise "which is different?" has more than one defensible answer. Words
- * with a second vowel (`sister`, `euro`, `happy`) are asked about in
- * `pron-vowel-words.ts` instead. Never reorder or delete a row: ids are
- * positional (AGENTS.md §2). New rows go at the end.
+ * A word with more than one vowel (`sister` is /ɪ/ + /ə/) is fair game, but
+ * only in a row built to the rule in `docs/decisions.md` §18: the two matching
+ * words share the row's sound, and the odd word shares **no** vowel with
+ * either. Without that, "which is different?" has a second defensible answer —
+ * pair `sister` with `actor` against `six` and the learner can just as well say
+ * *actor*, because `six` and `sister` both have /ɪ/.
+ *
+ * Never reorder or delete a row: ids are positional (AGENTS.md §2). New rows go
+ * at the end.
  */
 export const vowelRows: Array<[string, string, string]> = [
   ['six', 'three', 'film'], ['please', 'meet', 'window'], ['she', 'we', 'gym'],
@@ -39,10 +44,26 @@ export const vowelRows: Array<[string, string, string]> = [
   // Page words the test used to skip (docs/decisions.md §18).
   ['english', 'women', 'three'], ['what', 'want', 'no'], ['but', 'brush', 'book'],
   ['spain', 'they', 'six'], ['I', 'right', 'meet'], ['sure', 'four', 'short'],
+  // The rows the page prints with a second, weak vowel. The odd word shares no
+  // vowel at all with the other two, so only one answer is defensible.
+  ['sister', 'actor', 'book'], ['famous', 'about', 'six'],
+  ['policeman', 'famous', 'book'], ['umbrella', 'brush', 'book'],
+  ['excuse', 'food', 'bag'], ['turkey', 'girl', 'stop'],
+  ['euro', 'plural', 'six'], ['europe', 'sure', 'bag'],
+  ['happy', 'angry', 'book'], ['hungry', 'happy', 'stop'],
+  ['usually', 'situation', 'stop'], ['education', 'situation', 'bag'],
 ];
 
 /** Words are authored as the book prints them; the table is keyed lowercase. */
 const soundOf = (word: string): [string, string] | undefined => SOUND_TABLE[word.toLowerCase()];
+
+/**
+ * The key word an explanation names the sound by. The page prints its two weak
+ * vowels as bare symbols, so those are named by one of their own words rather
+ * than by the internal key.
+ */
+const KEY_WORD: Record<string, string> = { 'weak-i': 'happy', 'weak-u': 'situation' };
+const nameOf = (sound: string): string => KEY_WORD[sound] ?? sound;
 
 const drafts: Draft[] = vowelRows.map((words) => {
   const sounds = words.map((w) => soundOf(w)?.[0] ?? '');
@@ -54,7 +75,8 @@ const drafts: Draft[] = vowelRows.map((words) => {
     q: 'Which word has a different sound?',
     o: words as [string, string, string],
     a: answer as 0 | 1 | 2,
-    e: `${words[answer]} has the sound ${SOUND_IPA[odd]} (${odd}). ${rest} both have ${SOUND_IPA[other]} (${other}).`,
+    e: `${words[answer]} has the sound ${SOUND_IPA[odd]} (${nameOf(odd)}). `
+      + `${rest} both have ${SOUND_IPA[other]} (${nameOf(other)}).`,
     c: [odd, other].sort().join('-vs-'),
     d: 2 as const,
     sound: {

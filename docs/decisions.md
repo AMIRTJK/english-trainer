@@ -101,7 +101,7 @@ lost — only the ability to re-open a very old result screen.
 
 ## 8. Bank size is reported honestly
 
-778 verified questions across 49 topics and 192 constructs. A Quick Test (50) and
+773 verified questions across 49 topics and 195 constructs. A Quick Test (50) and
 an Official Test (100) fill completely. A narrow custom selection may not: the app
 then says how many unique questions exist. A preset runs a shorter test rather
 than repeating items to pad it out (`PROJECT_SPEC.md` §10); a custom test repeats
@@ -149,10 +149,12 @@ not highlight it).
 
 ### 10b. Sound contrasts are locked to the question bank
 
-`sounds.ts` lists the 26 pairs the "different sound" questions contrast.
-`tests/vocabulary-content.test.ts` walks every `different-sound` question and
-fails if a pair is missing, so the Vocabulary screen can never advertise a
-contrast the tests do not actually ask about. The same test asserts that every
+`sounds.ts` lists the pairs the "different sound" questions contrast — 26 at the
+time, 35 now (§18). `tests/vocabulary-content.test.ts` walks every
+`different-sound` question and fails if a pair is missing, so the Vocabulary
+screen can never advertise a contrast the tests do not actually ask about. The
+only pairs it skips are those naming the two weak vowels of SB p.134, which are
+not Sound Bank sounds at all (§14a). The same test asserts that every
 word those questions use is in the list; the two exceptions are `bags` and
 `cars`, deliberately left out as plural forms of `bag` and `car` rather than
 listed twice.
@@ -343,29 +345,45 @@ words on rows that were otherwise covered (English, women, what, but, excuse,
 Turkey, Spain, they, I, right, umbrella).
 
 They were not an oversight of authoring so much as a limit of the format. A
-"which word has a different sound?" row needs three words whose vowel is a
-single, comparable sound. `sister` is on the /ə/ row but starts with /ɪ/;
-`euro` is on the /ʊə/ row but ends with /əʊ/; `happy` is on the /i/ row but
-starts with /æ/. An odd-one-out built from those has more than one defensible
-answer, and a question with two right answers teaches nothing.
+"which word has a different sound?" row normally works because the learner
+compares the stressed vowel, and those words are taught for a vowel that is
+**not** stressed: `sister` is on the /ə/ row but its stressed vowel is /ɪ/,
+`euro` is on the /ʊə/ row but ends with /əʊ/, `happy` is on the /i/ row but
+starts with /æ/. Pair `sister` with `actor` against `six` and the intended
+answer is *six*, but *actor* is just as defensible — `six` and `sister` both
+have /ɪ/. A question with two right answers teaches nothing.
 
-So the topic now has **two question families**:
+The first attempt at this added a second question format — *which word has the
+sound /ə/ (computer)?* — which sidesteps the ambiguity but is not the format of
+the exam paper, and the exam format is the point. It was removed.
 
-| File | Format | Used for |
+**The rule that makes those rows answerable instead:** the two matching words
+share the taught sound, and the odd word shares **no vowel at all** with
+either. Then there is exactly one pair with anything in common, so the answer
+holds however the learner listens:
+
+| Row | Shared | Odd |
 | --- | --- | --- |
-| `pron-vowels.ts` | which word has a different sound? | words whose vowels are all the row's sound |
-| `pron-vowel-words.ts` | which word has the sound /ə/ (computer)? | words that carry a second vowel |
+| sister · actor · book | /ə/ | book — /ʊ/, and neither /ɪ/ nor /æ/ |
+| euro · plural · six | /ʊə/ | six — /ɪ/, and neither /əʊ/ nor /ə/ |
+| happy · angry · book | /æ/ and /i/ | book — /ʊ/ |
+| usually · situation · stop | /u/ | stop — /ɒ/ |
 
-The second names the sound and asks for the word, and its two distractors
-contain none of that sound, so the answer is unambiguous however many vowels the
-word has. The two weak vowels have no key word on the page, so their prompts pin
-them against the long vowel they are confused with: *which word has the sound
-/i/ (not /iː/)?*
+Twelve rows built that way cover all seventeen of the page's weak-vowel words,
+in the one format the test uses. `tests/sound-rules.test.ts` holds the rule: it
+checks that every one of the 147 words is asked about, that every question is a
+`different-sound` item, and that in each of those twelve rows exactly one pair
+of words shares a vowel.
 
-`tests/sound-rules.test.ts` asserts that every one of the 147 words is asked
-about somewhere, and that no two-vowel word ever appears in an odd-one-out row.
-Three sound contrasts were added to `content/beginner/vocabulary/sounds.ts` to
-match the new rows (train/fish, bike/tree, tourist/horse).
+The rule is deliberately applied to those rows only. An ordinary row compares
+stressed vowels, which is what the exam means and what the earlier rows were
+authored to; re-litigating fifty verified questions was not the ask.
+
+Nine sound contrasts were added to `content/beginner/vocabulary/sounds.ts` to
+match the new rows. The pairs involving the two weak vowels are deliberately
+absent: that list backs the Vocabulary screen, which speaks about the 44 Sound
+Bank sounds, and `weak-i`/`weak-u` are not among them (§14a). The test skips
+them for the same reason.
 
 Nothing was removed. The existing rows use book words from elsewhere in the
 Sound Bank (car, chair, photo, shirt…) as partners, which is legitimate; the

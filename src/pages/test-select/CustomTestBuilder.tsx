@@ -8,6 +8,8 @@ export interface CustomSelection {
   categoryIds: CategoryId[];
   count: number;
   adaptive: boolean;
+  /** Ask small pools more than once instead of running a shorter test. */
+  allowRepeats: boolean;
 }
 
 const COUNTS = [10, 20, 30, 50, 100];
@@ -23,6 +25,7 @@ export function CustomTestBuilder({
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [count, setCount] = useState(20);
   const [adaptive, setAdaptive] = useState(false);
+  const [allowRepeats, setAllowRepeats] = useState(true);
   const [touched, setTouched] = useState(false);
 
   const grouped = useMemo(() => {
@@ -147,6 +150,20 @@ export function CustomTestBuilder({
           </span>
         </label>
 
+        <label className="row" style={{ gap: 9 }}>
+          <input
+            type="checkbox"
+            checked={allowRepeats}
+            onChange={(e) => setAllowRepeats(e.target.checked)}
+          />
+          <span className="small">
+            Repeat questions to reach the full length
+            <span className="faint">
+              {' '}— ask every question once, then come round again rather than stop early
+            </span>
+          </span>
+        </label>
+
         {touched && empty ? (
           <p className="notice notice-warn" role="alert">
             Choose at least one topic before starting the test.
@@ -156,7 +173,11 @@ export function CustomTestBuilder({
         {tooFew ? (
           <p className="notice notice-warn">
             These topics have {available} verified question{available === 1 ? '' : 's'}.
-            The test will have {available} instead of {count} — nothing is repeated to pad it out.
+            {allowRepeats
+              ? ` The test will still have ${count}: every question is asked at least once,
+                 and ${count - available} come round a second time.`
+              : ` The test will have ${available} instead of ${count} — nothing is repeated
+                 to pad it out.`}
           </p>
         ) : null}
 
@@ -165,11 +186,11 @@ export function CustomTestBuilder({
           className="btn btn-primary"
           disabled={empty}
           onClick={() => onStart({
-            topicIds: [...selected], categoryIds: [], count, adaptive,
+            topicIds: [...selected], categoryIds: [], count, adaptive, allowRepeats,
           })}
         >
           Start custom test
-          {empty ? '' : ` · ${Math.min(count, available)} questions`}
+          {empty ? '' : ` · ${allowRepeats ? count : Math.min(count, available)} questions`}
         </button>
       </div>
     </section>

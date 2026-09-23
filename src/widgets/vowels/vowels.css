@@ -81,7 +81,8 @@ code.vowel-letters { font-size: 1rem; letter-spacing: .04em; }
 
 /* --- Level bands ----------------------------------------------------- */
 
-.vowel-band.is-locked { opacity: .65; }
+/* Not locked any more — just not the level we would have suggested. */
+.vowel-band.is-locked { opacity: .82; }
 .vowel-band-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 1.5em; height: 1.5em; margin-right: 4px;

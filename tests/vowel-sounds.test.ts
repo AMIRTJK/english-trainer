@@ -146,4 +146,36 @@ describe('rounds', () => {
     const next = requeue(queue, 1, 4);
     expect(next.at(-1)?.id).toBe(queue[1]?.id);
   });
+
+  // "Train this level" must never answer "nothing to practise here right now".
+  it('revises learned words when nothing is due, at every level', () => {
+    const progress = createLevelProgress('beginner');
+    for (const word of index!.bank.words) {
+      recordTrackAnswer(progress.vowels, word.id, true);
+      recordTrackAnswer(progress.vowels, word.id, true);
+    }
+    const known = Object.values(progress.vowels).filter((w) => w.status === 'known');
+    expect(known.length).toBeGreaterThan(0);
+
+    for (const level of [1, 2, 3] as const) {
+      const round = selectRound(byLevel, progress.vowels, { level, seed: 3 });
+      expect(round.length, `level ${level}`).toBeGreaterThan(0);
+      expect(round.every((w) => w.level === level)).toBe(true);
+    }
+    expect(selectRound(byLevel, progress.vowels, { seed: 4 }).length).toBeGreaterThan(0);
+  });
+
+  it('still puts words that are due ahead of learned ones', () => {
+    const progress = createLevelProgress('beginner');
+    const words = byLevel.get(1) ?? [];
+    for (const word of words) {
+      recordTrackAnswer(progress.vowels, word.id, true);
+      recordTrackAnswer(progress.vowels, word.id, true);
+    }
+    const missed = words[0] as VowelWord;
+    recordTrackAnswer(progress.vowels, missed.id, false);
+
+    const round = selectRound(byLevel, progress.vowels, { level: 1, seed: 6 });
+    expect(round[0]?.id).toBe(missed.id);
+  });
 });

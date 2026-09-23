@@ -8,9 +8,11 @@ import { isDue, needsRepeat, type WordProgress } from '@/entities/vocab';
  * The learner's complaint is that they can pick the right answer without
  * knowing why, so the order matters as much as the content: words whose letters
  * only ever make one sound come first, then words whose letters are ambiguous,
- * and only then the book's "! but also" exceptions. A level is not offered until
- * the one below it is mostly learned, so the pattern has a chance to sink in
- * before the exceptions muddy it.
+ * and only then the book's "! but also" exceptions.
+ *
+ * The order is a suggestion, never a gate. A round is always offered: when
+ * nothing is due, the learned words are revised instead, so "Train this level"
+ * can never answer "nothing to practise" (see `docs/decisions.md` §17).
  */
 
 export const DEFAULT_ROUND_SIZE = 15;
@@ -51,7 +53,7 @@ export interface RoundOptions {
   size?: number;
   seed?: number;
   now?: Date;
-  /** Ask again about words already learned, for revision. */
+  /** Put learned words in the queue straight away, not only as a fallback. */
   includeKnown?: boolean;
 }
 
@@ -71,6 +73,10 @@ function bucketOf(stored: WordProgress | undefined, now: Date): Bucket {
  * the same priority as the vocabulary flashcards — but always within the level
  * band, and easiest level first so a mixed round teaches the rule before the
  * exception.
+ *
+ * Words that are learned and not yet due are held back while there is other
+ * work, and used to fill the round when there is not. A level with words in it
+ * therefore always yields a round.
  */
 export function selectRound(
   byLevel: ReadonlyMap<number, VowelWord[]>,
@@ -87,6 +93,7 @@ export function selectRound(
     : ([1, 2, 3] as VowelLevel[]).filter((n) => n <= ceiling);
 
   const out: VowelWord[] = [];
+  const revision: VowelWord[] = [];
   for (const level of levels) {
     const buckets: Record<Bucket, VowelWord[]> = { repeat: [], due: [], fresh: [], known: [] };
     for (const word of byLevel.get(level) ?? []) {
@@ -99,8 +106,12 @@ export function selectRound(
       ...(options.includeKnown ? shuffleInPlace(buckets.known, rng) : []),
     ];
     out.push(...ordered);
+    if (!options.includeKnown) revision.push(...shuffleInPlace(buckets.known, rng));
     if (out.length >= size) break;
   }
+
+  // Nothing due does not mean nothing to do: revise what is already learned.
+  if (out.length < size) out.push(...revision);
   return out.slice(0, size);
 }
 

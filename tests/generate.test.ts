@@ -69,10 +69,62 @@ describe('generateTest', () => {
     expect(plan.warnings.join(' ')).toMatch(/unique questions/i);
   });
 
+  it('fills the test with repeats when asked to, rather than running short', () => {
+    const topic = 'beg-p-sound-vowels';
+    const pool = getLevelIndex(LEVEL)!.byTopic.get(topic)!.length;
+    const plan = planTest({
+      levelId: LEVEL, kind: 'custom', count: 100, topicIds: [topic],
+      categoryIds: [], adaptive: false, mistakesOnly: false, allowRepeats: true,
+      mix: null, seed: 7,
+    }, fresh());
+
+    expect(plan.items).toHaveLength(100);
+    expect(plan.shortfall).toBe(0);
+    expect(plan.repeats).toBe(100 - pool);
+    expect(plan.warnings.join(' ')).toMatch(/come round/i);
+  });
+
+  it('asks every question once before it asks any of them twice', () => {
+    const topic = 'beg-p-sound-vowels';
+    const pool = getLevelIndex(LEVEL)!.byTopic.get(topic)!.length;
+    const plan = planTest({
+      levelId: LEVEL, kind: 'custom', count: 100, topicIds: [topic],
+      categoryIds: [], adaptive: false, mistakesOnly: false, allowRepeats: true,
+      mix: null, seed: 21,
+    }, fresh());
+
+    const first = plan.items.slice(0, pool).map((i) => i.questionId);
+    expect(new Set(first).size).toBe(pool);
+    for (let i = 1; i < plan.items.length; i += 1) {
+      expect(plan.items[i]!.questionId).not.toBe(plan.items[i - 1]!.questionId);
+    }
+  });
+
+  it('shuffles the repeats instead of replaying the same order', () => {
+    const request = (seed: number) => planTest({
+      levelId: LEVEL, kind: 'custom', count: 100, topicIds: ['beg-p-sound-vowels'],
+      categoryIds: [], adaptive: false, mistakesOnly: false, allowRepeats: true,
+      mix: null, seed,
+    }, fresh()).items.map((i) => i.questionId);
+
+    expect(request(1)).not.toEqual(request(2));
+    expect(request(3)).toEqual(request(3));
+  });
+
+  it('leaves presets alone: they still run short rather than repeat', () => {
+    const plan = planTest({
+      levelId: LEVEL, kind: 'custom', count: 100, topicIds: ['beg-v-colours-adjectives'],
+      categoryIds: [], adaptive: false, mistakesOnly: false, allowRepeats: false,
+      mix: null, seed: 5,
+    }, fresh());
+    expect(plan.repeats).toBe(0);
+    expect(plan.shortfall).toBeGreaterThan(0);
+  });
+
   it('returns nothing when no topic is selected but a topic filter is empty-matching', () => {
     const plan = generateTest({
       levelId: LEVEL, kind: 'custom', count: 10, topicIds: ['does-not-exist'],
-      categoryIds: [], adaptive: false, mistakesOnly: false, seed: 1,
+      categoryIds: [], adaptive: false, mistakesOnly: false, allowRepeats: false, seed: 1,
     }, fresh());
     expect(plan.items).toHaveLength(0);
     expect(plan.warnings.length).toBeGreaterThan(0);

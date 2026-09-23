@@ -11,8 +11,8 @@ interface Props {
 /**
  * One difficulty band.
  *
- * A locked band still shows what it contains: the point is to make the ladder
- * visible, not to hide it.
+ * The ladder is advice, not a lock: a band the learner has not "earned" is
+ * still one click away, it just says what it assumes (`docs/decisions.md` §17).
  */
 export function VowelLevelCard({ band, unlockAtPercent }: Props): JSX.Element {
   return (
@@ -25,13 +25,12 @@ export function VowelLevelCard({ band, unlockAtPercent }: Props): JSX.Element {
       </div>
       <p className="tiny dim">{band.hint}</p>
       <Bar percent={band.percent} tone={band.percent >= unlockAtPercent ? 'good' : 'accent'} />
-      {band.unlocked ? (
-        <Link className="btn btn-sm" to={`/pronunciation/train?level=${band.level}`}>
-          Train this level
-        </Link>
-      ) : (
+      <Link className="btn btn-sm" to={`/pronunciation/train?level=${band.level}`}>
+        Train this level
+      </Link>
+      {band.unlocked ? null : (
         <p className="tiny faint">
-          Opens at {unlockAtPercent}% of the level above it.
+          Проще после {unlockAtPercent}% предыдущего уровня — но можно начать сейчас.
         </p>
       )}
     </section>

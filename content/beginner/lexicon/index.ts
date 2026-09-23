@@ -4,6 +4,7 @@ import { vocabularyBank, exerciseWords, extraWords, extraWords2 } from './vocabu
 import { pronunciationWords } from './pronunciation-words';
 import { wordsToLearn } from './words-to-learn';
 import { deliberateErrors } from './deliberate-errors';
+import { soundBankTerms } from './sound-bank-terms';
 
 /** Build the allowed-word set once at module init (see Performance.md §1). */
 function toSet(...blocks: string[]): ReadonlySet<string> {
@@ -27,6 +28,7 @@ export const lexicon: ReadonlySet<string> = toSet(
   extraWords,
   extraWords2,
   wordsToLearn,
+  soundBankTerms,
 );
 
 /** Forms that are wrong on purpose. They may only ever appear as a distractor. */

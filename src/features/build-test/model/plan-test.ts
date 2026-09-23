@@ -13,6 +13,8 @@ export interface PlanOptions {
   categoryIds: CategoryId[];
   adaptive: boolean;
   mistakesOnly: boolean;
+  /** Repeat questions rather than run short when the pool is small. */
+  allowRepeats?: boolean;
   mix: TestPreset['mix'];
   seed?: number;
 }
@@ -32,6 +34,7 @@ export function planTest(options: PlanOptions, progress: LevelProgress): TestPla
     categoryIds: options.categoryIds,
     adaptive: options.adaptive,
     mistakesOnly: options.mistakesOnly,
+    allowRepeats: options.allowRepeats ?? false,
     seed,
   };
 
@@ -81,6 +84,7 @@ export function planTest(options: PlanOptions, progress: LevelProgress): TestPla
     items,
     shortfall: Math.max(shortfall, 0),
     poolSize,
+    repeats: items.length - new Set(items.map((item) => item.questionId)).size,
     warnings: [...new Set(warnings)],
   };
 }

@@ -1,4 +1,12 @@
-/** Word -> [Sound Bank key, IPA of the word]. Source: SB pp.134-135. */
+/**
+ * Word -> [Sound Bank key, IPA of the word]. Source: SB pp.134-135.
+ *
+ * The key is the row of SB p.134 the book prints the word under. For a word
+ * with more than one vowel that is the sound the row teaches, not the only
+ * vowel it contains — `sister` is on the /ə/ row but also has /ɪ/. Such words
+ * are asked about with "which word has the sound …", never as an odd-one-out
+ * (see `docs/decisions.md` §18).
+ */
 export const SOUND_TABLE: Record<string, [string, string]> = {
   // fish /ɪ/
   italy: ['fish', '/ˈɪtəli/'], six: ['fish', '/sɪks/'], film: ['fish', '/fɪlm/'],
@@ -64,4 +72,17 @@ export const SOUND_TABLE: Record<string, [string, string]> = {
   // boy /ɔɪ/
   toilet: ['boy', '/ˈtɔɪlət/'], noise: ['boy', '/nɔɪz/'], boyfriend: ['boy', '/ˈbɔɪfrend/'],
   enjoy: ['boy', '/ɪnˈdʒɔɪ/'],
+  // computer /ə/ — the whole row of the page
+  sister: ['computer', '/ˈsɪstə/'], actor: ['computer', '/ˈæktə/'],
+  famous: ['computer', '/ˈfeɪməs/'], about: ['computer', '/əˈbaʊt/'],
+  policeman: ['computer', '/pəˈliːsmən/'],
+  // tourist /ʊə/ — the whole row of the page
+  euro: ['tourist', '/ˈjʊərəʊ/'], europe: ['tourist', '/ˈjʊərəp/'],
+  sure: ['tourist', '/ʃʊə/'], plural: ['tourist', '/ˈplʊərəl/'],
+  // the two weak vowels the book prints without a key word
+  happy: ['weak-i', '/ˈhæpi/'], angry: ['weak-i', '/ˈæŋgri/'], hungry: ['weak-i', '/ˈhʌŋgri/'],
+  usually: ['weak-u', '/ˈjuːʒuəli/'], situation: ['weak-u', '/ˌsɪtʃuˈeɪʃn/'],
+  education: ['weak-u', '/ˌedʒuˈkeɪʃn/'],
+  // page words the test did not have an IPA for yet
+  excuse: ['boot', '/ɪkˈskjuːz/'], i: ['bike', '/aɪ/'],
 };

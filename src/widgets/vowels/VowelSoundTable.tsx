@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { SoundType } from '@content/types';
 import { CompareButton, SoundButton } from '@/features/pronounce';
 import type { VowelSoundRow } from '@/features/vowel-sounds';
@@ -32,6 +33,15 @@ export function VowelSoundTable({ rows, openKey = null }: Props): JSX.Element {
 
   return (
     <div className="stack gap-16">
+      <div className="between">
+        <p className="small dim">
+          Правила ниже — то, что спрашивает тест на правила Sound Bank.
+        </p>
+        <Link className="btn btn-sm" to="/tests?topic=beg-p-sound-rules&count=50">
+          Тест на эти правила
+        </Link>
+      </div>
+
       {TYPE_ORDER.map((type) => {
         const group = rows.filter((row) => row.sound.type === type);
         if (group.length === 0) return null;

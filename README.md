@@ -15,7 +15,7 @@ npm run dev
 
 ## What is inside
 
-- **640 verified questions** across 46 topics and 124 distinct constructs.
+- **778 verified questions** across 49 topics and 192 distinct constructs.
 - Quick Test (50), Official Test (100), Full Test, Custom Test, Weak Areas,
   My Mistakes and Quick Practice.
 - The real paper Quick Test result (38/50) imported as the starting history,

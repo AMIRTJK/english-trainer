@@ -77,6 +77,8 @@ export const contrasts: SoundContrast[] = [
   ['bull', 'boot'], ['bull', 'up'], ['egg', 'bird'], ['bird', 'horse'],
   ['train', 'bike'], ['phone', 'owl'], ['phone', 'fish'], ['owl', 'up'],
   ['boy', 'clock'], ['ear', 'chair'],
+  // Added with the rows that finished SB p.134 (docs/decisions.md §18).
+  ['train', 'fish'], ['bike', 'tree'], ['tourist', 'horse'],
   ['thumb', 'mother'], ['snake', 'zebra'], ['snake', 'shower'],
   ['shower', 'chess'], ['chess', 'jazz'], ['jazz', 'yacht'],
   ['key', 'girl'], ['nose', 'singer'], ['flower', 'vase'],

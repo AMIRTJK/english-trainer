@@ -101,10 +101,11 @@ lost — only the ability to re-open a very old result screen.
 
 ## 8. Bank size is reported honestly
 
-640 verified questions across 46 topics and 124 constructs. A Quick Test (50) and
+778 verified questions across 49 topics and 192 constructs. A Quick Test (50) and
 an Official Test (100) fill completely. A narrow custom selection may not: the app
-then says how many unique questions exist and runs a shorter test rather than
-repeating items to pad it out (`PROJECT_SPEC.md` §10).
+then says how many unique questions exist. A preset runs a shorter test rather
+than repeating items to pad it out (`PROJECT_SPEC.md` §10); a custom test repeats
+instead, which §20 revises.
 
 ## 9. Hash routing
 
@@ -314,3 +315,117 @@ separately. `summariseRound` counts `correct && !hinted` as known, and lists a
 hinted word as *spelled right, but with a hint*, with no "you wrote" line. The
 card says the same at the moment of the answer, so the reason a right answer is
 coming back is never a surprise.
+
+## 17. Progress orders the sound trainer; it never closes it
+
+"Train this level" could answer *Nothing to practise here right now*, and two
+of the three difficulty bands showed no button at all until the band below was
+70% learned. Both were the same mistake: treating a teaching order as a lock.
+
+`selectRound` still deals missed words first, then due words, then unseen ones.
+What changed is the end of the queue: words that are learned and not yet due are
+held back while there is other work and **used to fill the round when there is
+not**, so a level that has words in it always yields a round. The three bands
+now always link to their trainer; a band the ladder would not have suggested yet
+says so in one line instead of hiding the button.
+
+The unlock threshold itself is unchanged — `unlockedLevel` still decides how far
+*mixed* practice reaches, which is where the "rule before the exception" order
+actually matters.
+
+## 18. The Vowel sounds test now covers the whole page, not most of it
+
+SB p.134 prints 147 words. The test asked about 121 of them. Four rows were
+missing outright — `computer /ə/` (sister, actor, famous, about, policeman),
+`tourist /ʊə/` (euro, Europe, sure, plural) and the two weak vowels `/i/`
+(happy, angry, hungry) and `/u/` (usually, situation, education) — plus stray
+words on rows that were otherwise covered (English, women, what, but, excuse,
+Turkey, Spain, they, I, right, umbrella).
+
+They were not an oversight of authoring so much as a limit of the format. A
+"which word has a different sound?" row needs three words whose vowel is a
+single, comparable sound. `sister` is on the /ə/ row but starts with /ɪ/;
+`euro` is on the /ʊə/ row but ends with /əʊ/; `happy` is on the /i/ row but
+starts with /æ/. An odd-one-out built from those has more than one defensible
+answer, and a question with two right answers teaches nothing.
+
+So the topic now has **two question families**:
+
+| File | Format | Used for |
+| --- | --- | --- |
+| `pron-vowels.ts` | which word has a different sound? | words whose vowels are all the row's sound |
+| `pron-vowel-words.ts` | which word has the sound /ə/ (computer)? | words that carry a second vowel |
+
+The second names the sound and asks for the word, and its two distractors
+contain none of that sound, so the answer is unambiguous however many vowels the
+word has. The two weak vowels have no key word on the page, so their prompts pin
+them against the long vowel they are confused with: *which word has the sound
+/i/ (not /iː/)?*
+
+`tests/sound-rules.test.ts` asserts that every one of the 147 words is asked
+about somewhere, and that no two-vowel word ever appears in an odd-one-out row.
+Three sound contrasts were added to `content/beginner/vocabulary/sounds.ts` to
+match the new rows (train/fish, bike/tree, tourist/horse).
+
+Nothing was removed. The existing rows use book words from elsewhere in the
+Sound Bank (car, chair, photo, shirt…) as partners, which is legitimate; the
+requirement was coverage of the page, not exclusivity to it.
+
+## 19. The Sound Bank rules are tested as rules, not only as words
+
+Expanding a sound in the Sound Bank shows the rules behind it — *одна e в
+закрытом слоге — /e/*, *oo перед k — /ʊ/*, the "! but also" column. Knowing
+which sound a word has and being able to state the rules of a sound are
+different skills, and only the first was being tested.
+
+`content/beginner/questions/pron-rules.ts` adds a topic, **Sound Bank rules**
+(`beg-p-sound-rules`, 115 questions), with four families, all derived from
+`vowelTable` so the test cannot drift from the screen it is testing:
+
+1. **letters → sound** — *which sound do the letters "igh" usually spell?*
+   Only for letters that spell one sound on the whole page.
+2. **sound → letters** — *which letters usually spell /ɔː/ horse?* One question
+   per spelling rule the page prints, so all of a sound's rules get asked.
+3. **the "! but also" column** — *which word is a "! but also" word for /e/
+   egg?* The wrong answers are regular words of the same sound, so the question
+   is about the exception, not about the sound.
+4. **the three groups** — *which sound is a diphthong?*
+
+The explanation of every answer is the Sound Bank's own rule text, so the test
+also teaches the wording the learner has to reproduce.
+
+**Two guards keep the wrong answers wrong.** A distractor sound is dropped when
+the target letters appear in one of its exception words (`bread` is on the /e/
+row, so `ea` → /e/ is never offered as wrong; `window` is on the /əʊ/ row, so
+`ow` → /əʊ/ is not either). A distractor word is dropped when it is flagged
+"! but also" anywhere on the page.
+
+**Lexicon.** The test shows the page's letter strings (`ee`, `igh`, `ere`) and
+its group headings, which are not words. `content/beginner/lexicon/sound-bank-terms.ts`
+adds them, deriving the letters from the table rather than re-typing them, so
+the gate cannot fall behind the content. It is a widening of the allowed list
+and deliberately a narrow one: these are printed on p.134.
+
+## 20. A practice test may repeat a question; an exam-shaped one may not
+
+§8 said the app runs a shorter test rather than repeat items. The learner asked
+for the opposite for exam preparation: with 73 vowel questions and a 100-question
+test, stopping at 73 means some sounds get less practice than others, and a
+repeat costs nothing.
+
+The rule is now split by what the test is imitating:
+
+- **Presets** (Quick, Official, Full) copy a real paper and keep unique
+  questions, so the honest-bank-size reporting of §8 still applies to them.
+- **A custom test** has a *Repeat questions to reach the full length* checkbox,
+  **on by default**, and the deep links from the Sound Bank set it.
+
+`padWithRepeats` deals the whole pool, reshuffled every pass, until the test is
+full: **every question is asked once before any is asked twice**, so a repeat
+never costs coverage, and the only place a duplicate could land next to itself —
+a pass boundary — is swapped away. `TestPlan.repeats` reports how many extra
+items that took, and the warning says so plainly rather than apologising for a
+short test.
+
+The runner was already index-based, so a repeated question needed no change
+there; the results list was keyed by `questionId` and is now keyed by position.

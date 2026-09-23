@@ -56,6 +56,7 @@ const pronunciation: Row[] = [
   ['sound-ear-chair', 10, 'Sounds: /ɪə/ and /eə/', 'ear vs chair — here, near, where, there'],
   ['sound-vowels', 3, 'Vowel sounds', 'short vowels, long vowels and diphthongs'],
   ['sound-consonants', 1, 'Consonant sounds', 'consonant sounds from the Sound Bank'],
+  ['sound-rules', 3, 'Sound Bank rules', 'which letters spell which sound, and the "! but also" words'],
 ];
 
 const stress: Row[] = [

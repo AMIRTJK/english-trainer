@@ -32,10 +32,11 @@ export function MistakeList({
         <p className="small dim">No mistakes in this test.</p>
       ) : (
         <div className="stack gap-16">
-          {mistakes.map((answer) => {
+          {mistakes.map((answer, i) => {
             const question = index?.byId.get(answer.questionId);
             return (
-              <article key={answer.questionId} className="stack gap-8">
+              // A test may ask the same question twice, so the id is not a key.
+              <article key={`${answer.questionId}-${i}`} className="stack gap-8">
                 <div className="row" style={{ gap: 6 }}>
                   <Pill>{titleOf(answer.topicId)}</Pill>
                   <Pill tone="accent">{REASON_LABEL[answer.reason]}</Pill>

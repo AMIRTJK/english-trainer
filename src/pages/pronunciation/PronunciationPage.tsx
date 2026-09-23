@@ -99,6 +99,23 @@ export default function PronunciationPage(): JSX.Element {
         <Link className="btn" to="/vocabulary/spelling">Spelling</Link>
       </div>
 
+      <section className="card stack gap-8">
+        <h2 className="small">Tests</h2>
+        <p className="small dim">
+          Тест по словам проходит все 147 слов страницы; тест по правилам спрашивает то,
+          что написано внутри аккордеона — какие буквы дают звук и где книга ставит
+          «! but also».
+        </p>
+        <div className="row">
+          <Link className="btn btn-primary btn-sm" to="/tests?topic=beg-p-sound-vowels&count=100">
+            Vowel sounds test · 100 q
+          </Link>
+          <Link className="btn btn-sm" to="/tests?topic=beg-p-sound-rules&count=50">
+            Sound Bank rules test · 50 q
+          </Link>
+        </div>
+      </section>
+
       {panel === 'chart' ? <VowelSoundChart sounds={data.index.bank.sounds} /> : null}
       {panel === 'table' ? <VowelSoundTable rows={data.rows} /> : null}
     </div>

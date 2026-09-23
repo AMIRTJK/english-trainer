@@ -25,7 +25,9 @@ import { vocabHotels } from './vocab-hotels';
 import { vocabPrepositions } from './vocab-prepositions';
 import { pronEarChair } from './pron-ear-chair';
 import { pronVowels } from './pron-vowels';
+import { pronVowelWords } from './pron-vowel-words';
 import { pronConsonants } from './pron-consonants';
+import { pronRules } from './pron-rules';
 import { stressWords } from './stress-words';
 import { stressPatterns } from './stress-patterns';
 
@@ -42,6 +44,6 @@ export const questions: Question[] = [
   ...vocabNumbers, ...vocabCountries, ...vocabHotels, ...vocabPrepositions,
   ...vocabDates, ...vocabTime, ...vocabVerbPhrases, ...vocabFilms,
   ...vocabActivities, ...vocabClothes,
-  ...pronEarChair, ...pronVowels, ...pronConsonants,
+  ...pronEarChair, ...pronVowels, ...pronVowelWords, ...pronConsonants, ...pronRules,
   ...stressWords, ...stressPatterns,
 ];

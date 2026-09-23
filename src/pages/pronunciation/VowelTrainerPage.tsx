@@ -80,9 +80,9 @@ export default function VowelTrainerPage(): JSX.Element {
   if (cards.length === 0) {
     return (
       <div className="page stack gap-16">
-        <Empty title="Nothing to practise here right now">
-          Every word at this level is learned and not due yet. Try another level, or come
-          back later.
+        <Empty title="This level has no words">
+          Progress never empties a round — learned words come back as revision — so this
+          only happens if the level itself is empty.
         </Empty>
         <Link className="btn btn-primary" to="/pronunciation">Back to Vowel sounds</Link>
       </div>

@@ -15,6 +15,11 @@ export interface TestRequest {
   adaptive: boolean;
   /** Restrict to questions the user has previously answered wrongly. */
   mistakesOnly: boolean;
+  /**
+   * Fill the test to `count` by asking small pools more than once, instead of
+   * running a shorter test (`docs/decisions.md` §20).
+   */
+  allowRepeats: boolean;
   seed: number;
 }
 
@@ -31,6 +36,8 @@ export interface TestPlan {
   /** Fewer questions than asked for, because the pool is too small. */
   shortfall: number;
   poolSize: number;
+  /** Questions asked more than once so the test could reach its full length. */
+  repeats: number;
   warnings: string[];
 }
 
@@ -116,19 +123,54 @@ function diversify(chosen: Scored[], rng: Rng): Scored[] {
   return out;
 }
 
+/**
+ * Keep dealing the whole pool, reshuffled every pass, until the test is full.
+ *
+ * Every question is asked once before any is asked twice, so a repeat never
+ * costs coverage. A pass boundary is the only place the same item could land
+ * twice in a row, so that one case is swapped away.
+ */
+function padWithRepeats(picked: Scored[], pool: Scored[], count: number, rng: Rng): Scored[] {
+  const out = [...picked];
+  while (out.length < count && pool.length > 0) {
+    const pass = shuffleInPlace([...pool], rng);
+    if (pass.length > 1 && pass[0] === out.at(-1)) {
+      const swap = pass[1] as Scored;
+      pass[1] = pass[0] as Scored;
+      pass[0] = swap;
+    }
+    for (const item of pass) {
+      if (out.length >= count) break;
+      out.push(item);
+    }
+  }
+  return out;
+}
+
 export function generateTest(request: TestRequest, progress: LevelProgress): TestPlan {
   const rng = createRng(request.seed);
   const warnings: string[] = [];
   const pool = candidatePool(request, progress);
 
   if (pool.length === 0) {
-    return { request, items: [], shortfall: request.count, poolSize: 0, warnings: ['No questions match this selection.'] };
+    return {
+      request,
+      items: [],
+      shortfall: request.count,
+      poolSize: 0,
+      repeats: 0,
+      warnings: ['No questions match this selection.'],
+    };
   }
 
   const now = Date.now();
   const scored = pool.map((q) => scoreQuestion(q, progress, now, request.adaptive));
   const take = Math.min(request.count, pool.length);
-  const picked = diversify(pickWeighted(scored, take, rng), rng);
+  const unique = diversify(pickWeighted(scored, take, rng), rng);
+  const picked = request.allowRepeats
+    ? padWithRepeats(unique, scored, request.count, rng)
+    : unique;
+  const repeats = picked.length - unique.length;
 
   const shortfall = request.count - picked.length;
   if (shortfall > 0) {
@@ -137,10 +179,16 @@ export function generateTest(request: TestRequest, progress: LevelProgress): Tes
       `so this test has ${picked.length} instead of ${request.count}. ` +
       'Questions are never repeated inside one test.',
     );
+  } else if (repeats > 0) {
+    warnings.push(
+      `This selection has ${unique.length} questions, so ${repeats} of them come round ` +
+      `a second time to make ${request.count}. Every question is asked at least once.`,
+    );
   }
 
-  const constructs = new Set(picked.map((p) => p.question.constructId));
-  if (picked.length >= 10 && constructs.size < picked.length / 3) {
+  // Judged on the distinct questions: repeats say nothing about variety.
+  const constructs = new Set(unique.map((p) => p.question.constructId));
+  if (unique.length >= 10 && constructs.size < unique.length / 3) {
     warnings.push(
       'This selection has few distinct structures, so several questions test the same rule.',
     );
@@ -152,5 +200,5 @@ export function generateTest(request: TestRequest, progress: LevelProgress): Tes
     optionOrder: shuffleInPlace([0, 1, 2], rng),
   }));
 
-  return { request, items, shortfall, poolSize: pool.length, warnings };
+  return { request, items, shortfall, poolSize: pool.length, repeats, warnings };
 }

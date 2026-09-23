@@ -28,6 +28,8 @@ export default function TestSelectPage(): JSX.Element {
       categoryIds: custom?.categoryIds ?? [],
       adaptive: custom?.adaptive ?? preset?.adaptive ?? false,
       mistakesOnly: preset?.mistakesOnly ?? false,
+      // A preset keeps the shape of the paper it copies, so it never repeats.
+      allowRepeats: custom?.allowRepeats ?? false,
       mix: custom ? null : preset?.mix ?? null,
     }, data.progress);
 
@@ -53,13 +55,26 @@ export default function TestSelectPage(): JSX.Element {
     navigate('/test/run');
   }, [data.levelId, data.progress, navigate, user]);
 
-  // Allow deep links like /tests?start=quick from the dashboard.
+  // Deep links: ?start=quick from the dashboard, ?topic=…&count=… from a
+  // topic screen such as the Sound Bank.
   const requested = params.get('start');
+  const topic = params.get('topic');
+  const count = Number(params.get('count'));
   useEffect(() => {
-    if (!requested) return;
+    if (!requested && !topic) return;
     setParams({}, { replace: true });
-    if (PRESETS.some((p) => p.kind === requested)) start(requested as TestKind);
-  }, [requested, setParams, start]);
+    if (requested && PRESETS.some((p) => p.kind === requested)) {
+      start(requested as TestKind);
+    } else if (topic) {
+      start('custom', {
+        topicIds: [topic],
+        categoryIds: [],
+        count: Number.isFinite(count) && count > 0 ? count : 30,
+        adaptive: false,
+        allowRepeats: true,
+      });
+    }
+  }, [requested, topic, count, setParams, start]);
 
   if (!data.hasContent) {
     return (

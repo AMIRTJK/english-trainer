@@ -2,6 +2,7 @@ import { getLevelIndex } from '@content/registry';
 import type { Attempt, SelectionReason } from '@/entities/attempt/model/types';
 import { Pill } from '@/shared/ui/primitives';
 import { OptionLabel } from '@/features/run-test/ui/QuestionView';
+import { QuestionAudioPlayer } from '@/widgets/runner';
 
 const REASON_LABEL: Record<SelectionReason, string> = {
   new: 'New question',
@@ -45,6 +46,10 @@ export function MistakeList({
                 <p style={{ fontWeight: 550 }}>
                   {question?.prompt ?? 'Question text not available'}
                 </p>
+
+                {question ? (
+                  <QuestionAudioPlayer question={question} options={question.options} compact />
+                ) : null}
 
                 <div className="stack gap-8" style={{ paddingLeft: 2 }}>
                   <div className="row" style={{ gap: 8 }}>

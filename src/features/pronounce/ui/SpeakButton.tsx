@@ -4,6 +4,8 @@ import { isSpeechAvailable, primeVoices, speak, stopSpeaking } from '../model/sp
 interface Props {
   /** The English word to pronounce. */
   text: string;
+  /** Label when not compact, defaults to "Listen". */
+  label?: string;
   /** Smaller button for dense lists. */
   compact?: boolean;
   /** Speak slowly so a beginner can hear the vowel. */
@@ -11,7 +13,9 @@ interface Props {
 }
 
 /** 🔊 button. Pressing it again repeats the word. */
-export function SpeakButton({ text, compact = false, slow = false }: Props): JSX.Element | null {
+export function SpeakButton({
+  text, label, compact = false, slow = false,
+}: Props): JSX.Element | null {
   const [speaking, setSpeaking] = useState(false);
   const alive = useRef(true);
 
@@ -26,7 +30,8 @@ export function SpeakButton({ text, compact = false, slow = false }: Props): JSX
 
   if (!isSpeechAvailable()) return null;
 
-  const onClick = (): void => {
+  const onClick = (e?: React.MouseEvent): void => {
+    e?.stopPropagation();
     if (speaking) {
       stopSpeaking();
       setSpeaking(false);
@@ -45,8 +50,8 @@ export function SpeakButton({ text, compact = false, slow = false }: Props): JSX
       onClick={onClick}
       aria-label={`Listen to ${text}`}
     >
-      <span aria-hidden="true">🔊</span>
-      {compact ? null : <span className="small">Listen</span>}
+      <span aria-hidden="true">{speaking ? '⏹' : '🔊'}</span>
+      {compact ? null : <span className="small">{label ?? 'Listen'}</span>}
     </button>
   );
 }

@@ -148,10 +148,12 @@ export default function SettingsPage(): JSX.Element {
           ['timerEnabled', 'Show a timer during timed tests'],
           ['allowBack', 'Allow going back to a previous question'],
           ['shuffleOptions', 'Shuffle the answer options'],
+          ['audioPlayerEnabled', 'Show audio player during tests'],
         ] as const).map(([key, label]) => (
           <label key={key} className="row" style={{ gap: 9 }}>
             <input
-              type="checkbox" checked={user.profile.settings[key]}
+              type="checkbox"
+              checked={user.profile.settings[key] ?? true}
               onChange={(e) => updateUser((draft) => { draft.profile.settings[key] = e.target.checked; })}
             />
             <span className="small">{label}</span>

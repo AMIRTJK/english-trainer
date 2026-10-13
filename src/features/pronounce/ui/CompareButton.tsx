@@ -25,7 +25,8 @@ export function CompareButton({ words, label = 'Play all', onIndex }: Props): JS
     setPlaying(false);
   };
 
-  const onClick = (): void => {
+  const onClick = (e?: React.MouseEvent): void => {
+    e?.stopPropagation();
     if (playing) {
       stop();
       return;

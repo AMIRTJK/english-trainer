@@ -8,12 +8,13 @@ import {
 import { clearSession, flushSession, loadSession, saveSession } from '@/features/run-test/model/session-store';
 import { Empty } from '@/shared/ui/primitives';
 import { OptionLabel, PromptText, questionHint } from '@/features/run-test/ui/QuestionView';
+import { QuestionAudioPlayer } from '@/widgets/runner';
 import { RunnerBar } from './RunnerBar';
 import './runner.css';
 
 export default function TestRunnerPage(): JSX.Element {
   const navigate = useNavigate();
-  const { saveAttempt } = useApp();
+  const { user, saveAttempt } = useApp();
   const [session, setSession] = useState<TestSession | null>(() => loadSession());
   const [confirmExit, setConfirmExit] = useState(false);
   const questionStart = useRef<number>(Date.now());
@@ -137,6 +138,9 @@ export default function TestRunnerPage(): JSX.Element {
         <div className="runner-question">
           {hint && hint !== question.prompt ? <p className="small dim">{hint}</p> : null}
           <h1 className="prompt"><PromptText prompt={question.prompt} /></h1>
+          {user?.profile.settings.audioPlayerEnabled !== false ? (
+            <QuestionAudioPlayer question={question} options={options} />
+          ) : null}
         </div>
 
         <div className="runner-options" role="radiogroup" aria-label="Answer options">

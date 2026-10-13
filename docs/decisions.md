@@ -447,3 +447,24 @@ short test.
 
 The runner was already index-based, so a repeated question needed no change
 there; the results list was keyed by `questionId` and is now keyed by position.
+
+## 21. Interactive audio player in the Test Runner
+
+Tests in the app serve as trainers rather than purely silent exams. When learning
+pronunciation and sound rules (e.g. *Which letters usually spell /eə/ chair?*,
+*Which word has a different sound?*, or word stress), the learner needs to hear
+the target vowel sound, key words, and answer options to train their ear and
+anchor the spelling rules in real sounds.
+
+`QuestionAudioPlayer` lives in `src/widgets/runner/` and is embedded directly
+under the question prompt in `TestRunnerPage`.
+
+1. **Target sound & word.** When the prompt or metadata references a Sound Bank
+   sound (e.g. `/eə/ chair`), it offers a Web Audio formant synthesiser button
+   for the bare vowel sound and Speech Synthesis for the anchor word.
+2. **Options audio.** When options are words or sound rules (e.g. *six*, *three*,
+   *film* or */aɪ/ bike*), learners can listen to individual options and play
+   all options sequentially (`CompareButton`).
+3. **Safety & performance.** Moving to another question or unmounting immediately
+   stops all active speech and synthesised audio (`Performance.md` §2). A user
+   setting (`audioPlayerEnabled`) lets learners toggle the player off if desired.

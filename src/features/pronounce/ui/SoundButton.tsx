@@ -36,7 +36,8 @@ export function SoundButton({
 
   if (!isVowelAudioAvailable() || !canPlayAlone(ipa)) return null;
 
-  const onClick = (): void => {
+  const onClick = (e?: React.MouseEvent): void => {
+    e?.stopPropagation();
     if (playing) {
       stopVowel();
       setPlaying(false);

@@ -7,3 +7,9 @@ export {
   isVowelAudioAvailable, playVowel, playVowelSequence, stopVowel,
 } from './model/vowel-audio';
 export { canPlayAlone, shapeFor, VOWEL_SHAPES, type Formants, type VowelShape } from './model/formants';
+export {
+  extractQuestionAudio,
+  type OptionAudioItem,
+  type QuestionAudioModel,
+  type SoundItem,
+} from './model/question-audio';

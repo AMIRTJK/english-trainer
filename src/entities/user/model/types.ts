@@ -17,6 +17,7 @@ export interface Profile {
     timerEnabled: boolean;
     allowBack: boolean;
     shuffleOptions: boolean;
+    audioPlayerEnabled?: boolean;
   };
 }
 
@@ -45,7 +46,12 @@ export function createProfile(name: string, levelId: string): Profile {
     activeLevelId: levelId,
     createdAt: new Date().toISOString(),
     goals: { [levelId]: { ...DEFAULT_GOALS } },
-    settings: { timerEnabled: true, allowBack: true, shuffleOptions: true },
+    settings: {
+      timerEnabled: true,
+      allowBack: true,
+      shuffleOptions: true,
+      audioPlayerEnabled: true,
+    },
   };
 }
 

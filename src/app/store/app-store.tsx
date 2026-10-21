@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
-import { DEFAULT_LEVEL_ID, getLevelMeta } from '@content/registry';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { DEFAULT_LEVEL_ID, getLevelMeta, hasContent, isLevelLoaded, loadLevel } from '@content/registry';
 import type { UserData } from '@/entities/user/model/types';
 import {
   emptyUser, ensureLevelProgress, flushUser, loadUser, resetUser, setUser,
@@ -30,6 +30,25 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
   if (initial.current === null) initial.current = loadUser();
   const [user, setUserState] = useState<UserData | null>(initial.current);
   const [, bump] = useState(0);
+
+  // Only the active level's content is downloaded (Performance.md §6); nothing
+  // below renders until it is in, so every page can read it synchronously.
+  const activeLevelId = user?.profile.activeLevelId ?? DEFAULT_LEVEL_ID;
+  const [loadedLevel, setLoadedLevel] = useState<string | null>(
+    () => (isLevelLoaded(activeLevelId) ? activeLevelId : null),
+  );
+  useEffect(() => {
+    if (isLevelLoaded(activeLevelId)) {
+      setLoadedLevel(activeLevelId);
+      return undefined;
+    }
+    let alive = true;
+    const done = (): void => { if (alive) setLoadedLevel(activeLevelId); };
+    // A failed download falls through to the "not available" screens.
+    loadLevel(activeLevelId).then(done, done);
+    return () => { alive = false; };
+  }, [activeLevelId]);
+  const ready = loadedLevel === activeLevelId || !hasContent(activeLevelId);
 
   const commit = useCallback((next: UserData) => {
     setUser(next);
@@ -91,7 +110,11 @@ export function AppProvider({ children }: { children: ReactNode }): JSX.Element 
     user, createUser, setActiveLevel, saveAttempt, updateUser, replaceUser, clearEverything,
   }), [user, createUser, setActiveLevel, saveAttempt, updateUser, replaceUser, clearEverything]);
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      {ready ? children : <div className="page dim" style={{ minHeight: '50vh', opacity: 0.5 }}>Loading…</div>}
+    </AppContext.Provider>
+  );
 }
 
 export function useApp(): AppState {

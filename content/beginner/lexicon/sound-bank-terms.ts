@@ -1,3 +1,4 @@
+import { soundBankTermsOf } from '../../common/vowel-bank';
 import { vowelSounds } from '../pronunciation';
 
 /**
@@ -11,11 +12,4 @@ import { vowelSounds } from '../pronunciation';
  * not re-typed, so a change to the table cannot leave this list behind
  * (`docs/decisions.md` §19).
  */
-const groupHeadings = 'vowel vowels diphthong diphthongs';
-
-const spellingLetters = vowelSounds
-  .flatMap((sound) => sound.patterns.map((pattern) => pattern.letters))
-  .filter((letters) => letters !== '—')
-  .join(' ');
-
-export const soundBankTerms = `${groupHeadings} ${spellingLetters}`;
+export const soundBankTerms = soundBankTermsOf(vowelSounds);

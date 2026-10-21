@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getLevelIndex, getLevelMeta } from '@content/registry';
+import { DEFAULT_LEVEL_ID, getLevelIndex, getLevelMeta } from '@content/registry';
 import type { LevelProgress } from '@/entities/user/model/types';
 import { createLevelProgress } from '@/entities/user/model/types';
 import { summarise } from '@/entities/attempt/model/statistics';
@@ -19,7 +19,7 @@ export interface LevelData {
 
 export function useLevelData(): LevelData {
   const { user } = useApp();
-  const levelId = user?.profile.activeLevelId ?? 'beginner';
+  const levelId = user?.profile.activeLevelId ?? DEFAULT_LEVEL_ID;
   const index = getLevelIndex(levelId);
   const stored = user?.progress[levelId];
 

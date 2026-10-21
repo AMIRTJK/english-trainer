@@ -19,16 +19,18 @@ interface Props {
   rows: VowelSoundRow[];
   /** Key of the row that should start open, e.g. after a mistake. */
   openKey?: string | null;
+  /** The level's Sound Bank rules test. */
+  rulesTopicId: string;
 }
 
 /**
- * SB p.134 as a reference list: every vowel, its spelling rules and every word
+ * The Vowel sounds page as a reference list: every vowel, its spelling rules and every word
  * the page prints under it.
  *
- * One row expands at a time. Rendering all 22 rows with their 147 words at once
+ * One row expands at a time. Rendering all 22 rows with all their words at once
  * would be a wall of text and a long list for nothing (Performance.md §7).
  */
-export function VowelSoundTable({ rows, openKey = null }: Props): JSX.Element {
+export function VowelSoundTable({ rows, openKey = null, rulesTopicId }: Props): JSX.Element {
   const [open, setOpen] = useState<string | null>(openKey);
 
   return (
@@ -37,7 +39,7 @@ export function VowelSoundTable({ rows, openKey = null }: Props): JSX.Element {
         <p className="small dim">
           Правила ниже — то, что спрашивает тест на правила Sound Bank.
         </p>
-        <Link className="btn btn-sm" to="/tests?topic=beg-p-sound-rules&count=50">
+        <Link className="btn btn-sm" to={`/tests?topic=${rulesTopicId}&count=50`}>
           Тест на эти правила
         </Link>
       </div>

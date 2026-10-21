@@ -20,6 +20,12 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) return 'vendor';
+          // Each level is its own chunk, fetched when it becomes active. Its
+          // meta (the level list) and the paper-test record are tiny and needed
+          // before any level loads, so they stay in the shared content chunk.
+          const eager = id.endsWith('/meta.ts') || id.includes('imported-quick-test');
+          if (!eager && id.includes('/content/beginner/')) return 'content-beginner';
+          if (!eager && id.includes('/content/elementary/')) return 'content-elementary';
           if (id.includes('/content/')) return 'content';
           return undefined;
         },
@@ -30,5 +36,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
+    setupFiles: ['tests/setup-content.ts'],
   },
 });

@@ -36,6 +36,8 @@ Every AI agent and human contributor must read this file before changing code.
 ├── vocabulary/          legacy hand-made JSON — local only, git-ignored, not trusted
 ├── test/                photos of the completed Quick Test — local only, git-ignored
 ├── content/             the verified educational content layer
+│   ├── common/          level-independent builders (lexicon gate, questions, Sound Bank)
+│   ├── elementary/      one folder per level, same shape as beginner/
 │   └── beginner/        one folder per level
 │       ├── lexicon/     the words the level is allowed to use
 │       ├── questions/   the question bank
@@ -92,8 +94,9 @@ rather than inventing material.
 - All educational content lives under `content/<levelId>/` and is tagged with its
   `levelId`. **Content from different levels must never be mixed** — not in a
   question pool, not in statistics, not in storage.
-- Only material that comes from *English File 4th edition Beginner* may be used.
-  Do not invent vocabulary, structures or difficulty beyond the book.
+- Only material from the level's own book may be used (*English File 4th edition
+  Beginner* for `beginner`, *Elementary* for `elementary`). Do not invent
+  vocabulary, structures or difficulty beyond the book.
 - Every question must declare a `source` pointing at the book and page
   (e.g. `{ book: 'SB', page: 110, ref: 'Grammar Bank 10A' }`).
 - Every question carries a `status`: `draft | needs_review | verified | rejected | archived`.

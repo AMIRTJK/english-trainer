@@ -105,7 +105,7 @@ export default function TestSelectPage(): JSX.Element {
             onClick={() => { setError(null); start(preset.kind); }}
           >
             <div className="between">
-              <h3>{preset.title}</h3>
+              <h3>{preset.kind === 'full' ? `Full ${data.levelName} Test` : preset.title}</h3>
               <span className="pill pill-accent">{preset.count} q</span>
             </div>
             <p className="small dim">{preset.description}</p>

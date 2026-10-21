@@ -40,7 +40,7 @@ export function DashboardPage(): JSX.Element {
     return (
       <div className="page">
         <Empty title="Content for this level is not available yet">
-          Switch back to Beginner in Settings, or add a content pack for {data.levelName}.
+          Choose another level in Settings, or add a content pack for {data.levelName}.
         </Empty>
       </div>
     );

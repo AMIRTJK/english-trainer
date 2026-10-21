@@ -1,0 +1,92 @@
+import type { Question } from '../../types';
+import { GB, grammarTopic, type Draft } from './build';
+
+/** Grammar Bank 1A — present simple be +, subject pronouns (SB p.124). */
+const bePositive: Draft[] = [
+  { q: 'I ___ a student.', o: ['am', 'is', 'are'], a: 0, e: 'With I we use am: I am (I’m) a student.', c: 'form', d: 1 },
+  { q: 'We ___ from Córdoba.', o: ['is', 'are', 'am'], a: 1, e: 'With we we use are: We are (We’re) from Córdoba.', c: 'form', d: 1 },
+  { q: 'He ___ early.', o: ['are', 'am', 'is'], a: 2, e: 'With he, she and it we use is: He is (He’s) early.', c: 'form', d: 1 },
+  { q: 'They ___ teachers.', o: ['are', 'is', 'am'], a: 0, e: 'With they we use are: They are (They’re) teachers.', c: 'form' },
+  { q: 'Today ___ Wednesday.', o: ['are', 'is', 'am'], a: 1, e: 'Today is singular, so we use is.', c: 'form' },
+  { q: 'You ___ in room 402.', o: ['is', 'am', 'are'], a: 2, e: 'With you (singular or plural) we use are.', c: 'form' },
+  { q: 'Mike and Hannah are students. ___ in my class.', o: ['They’re', 'We’re', 'He’s'], a: 0,
+    e: 'Mike and Hannah = they, so They’re (They are).', c: 'pronoun' },
+  { q: 'Sam and I are friends. ___ in class 2.', o: ['They’re', 'We’re', 'You’re'], a: 1,
+    e: 'Sam and I = we, so We’re (We are).', c: 'pronoun' },
+  { q: 'Julia is a teacher. ___ very nice.', o: ['He’s', 'It’s', 'She’s'], a: 2,
+    e: 'Julia is a woman, so we use she: She’s.', c: 'pronoun' },
+  { q: 'The school is in Brighton. ___ a very good school.', o: ['It’s', 'She’s', 'They’re'], a: 0,
+    e: 'The school is a thing, so we use it: It’s.', c: 'pronoun' },
+  { q: 'John is in room 5. ___ a new student.', o: ['She’s', 'He’s', 'It’s'], a: 1,
+    e: 'John is a man, so we use he: He’s.', c: 'pronoun' },
+  { q: 'Which sentence is correct?', o: ['Is a school.', 'It’s a school.', 'It a school.'], a: 1,
+    e: 'We always use a subject pronoun with a verb: It’s a school. NOT Is a school.', c: 'subject-needed', d: 3 },
+  { q: 'Which sentence is correct?', o: ['Are teachers.', 'They teachers.', 'They’re teachers.'], a: 2,
+    e: 'We always use a subject pronoun: They’re teachers. NOT Are teachers.', c: 'subject-needed', d: 3 },
+  { q: 'What is the contraction of “I am”?', o: ['I’m', 'Im’', 'I’am'], a: 0,
+    e: 'The apostrophe (’) is the missing letter: I am → I’m.', c: 'contraction' },
+  { q: 'What is the contraction of “they are”?', o: ['theyr’e', 'they’re', 'there'], a: 1,
+    e: 'They are → they’re. The apostrophe takes the place of a.', c: 'contraction' },
+];
+
+/** Grammar Bank 1B — verb be − and ? (SB p.124). */
+const beNegQuestions: Draft[] = [
+  { q: 'I ___ American.', o: ['amn’t', 'isn’t', 'am not'], a: 2, e: 'The negative of I am is I am not (I’m not).', c: 'negative', d: 1 },
+  { q: 'She ___ from London.', o: ['isn’t', 'aren’t', 'not'], a: 0, e: 'With she: is not → isn’t.', c: 'negative' },
+  { q: 'They ___ Spanish.', o: ['isn’t', 'aren’t', 'not are'], a: 1, e: 'With they: are not → aren’t.', c: 'negative' },
+  { q: 'It ___ in South America. It’s in Europe.', o: ['aren’t', 'not is', 'isn’t'], a: 2, e: 'With it: is not → isn’t.', c: 'negative' },
+  { q: '___ you Polish?', o: ['Are', 'Is', 'Am'], a: 0, e: 'In a question are comes before you: Are you Polish?', c: 'question', d: 1 },
+  { q: '___ she Russian?', o: ['Are', 'Is', 'Am'], a: 1, e: 'With she the question is Is she…?', c: 'question', d: 1 },
+  { q: 'Where ___ from?', o: ['you are', 'are you', 'you'], a: 1,
+    e: 'In questions be comes before the subject: Where are you from? NOT Where you are from?', c: 'word-order', d: 3 },
+  { q: 'Which question is correct?', o: ['You are Brazilian?', 'Are Brazilian you?', 'Are you Brazilian?'], a: 2,
+    e: 'Put are before you to make a question: Are you Brazilian?', c: 'word-order' },
+  { q: 'A: Are you Turkish? B: Yes, ___.', o: ['I am', 'I’m', 'am I'], a: 0,
+    e: 'We don’t use contractions in positive short answers: Yes, I am. NOT Yes, I’m.', c: 'short-answer', d: 3 },
+  { q: 'A: Is Tijuana near Mexico City? B: No, ___.', o: ['it not', 'it isn’t', 'isn’t it'], a: 1,
+    e: 'The negative short answer is No, it isn’t.', c: 'short-answer' },
+  { q: 'A: Are they students? B: No, ___.', o: ['aren’t they', 'they not', 'they aren’t'], a: 2,
+    e: 'The negative short answer for they is No, they aren’t.', c: 'short-answer' },
+  { q: 'A: Is he from the USA? B: Yes, ___.', o: ['he is', 'he’s', 'is he'], a: 0,
+    e: 'Positive short answers have no contraction: Yes, he is.', c: 'short-answer', d: 3 },
+  { q: 'A: Are you in class 1? B: No. ___ in class 2.', o: ['I’m', 'I am not', 'I’m not'], a: 0,
+    e: 'The second sentence is positive: I’m in class 2.', c: 'dialogue' },
+  { q: 'A: Am I in room 10? B: Yes, ___.', o: ['you are', 'I am', 'you’re'], a: 0,
+    e: 'A question with Am I…? is answered Yes, you are.', c: 'short-answer' },
+];
+
+/** Grammar Bank 1C — possessive adjectives (SB p.124). */
+const possAdj: Draft[] = [
+  { q: 'I’m from Brazil. ___ name’s Gloria.', o: ['My', 'Me', 'I'], a: 0, e: 'The possessive adjective for I is my.', c: 'form', d: 1 },
+  { q: 'The students are from Italy. ___ names are Susanna and Tito.', o: ['There', 'Their', 'They'], a: 1,
+    e: 'The possessive adjective for they is their.', c: 'form' },
+  { q: 'She’s in my class. ___ name is Rebecca.', o: ['His', 'Its', 'Her'], a: 2,
+    e: 'Her is for a woman: her name.', c: 'his-her' },
+  { q: 'This is my teacher. ___ name is John.', o: ['His', 'Her', 'Its'], a: 0,
+    e: 'His is for a man: his name.', c: 'his-her' },
+  { q: 'We’re in class 2. ___ teacher is Richard.', o: ['Your', 'Our', 'Us'], a: 1,
+    e: 'The possessive adjective for we is our.', c: 'form' },
+  { q: 'London is famous for ___ red buses.', o: ['it’s', 'his', 'its'], a: 2,
+    e: 'Its is for a thing. It’s means it is.', c: 'its-its', d: 3 },
+  { q: 'How do you spell ___ surname?', o: ['your', 'you', 'you’re'], a: 0,
+    e: 'The possessive adjective for you is your.', c: 'form' },
+  { q: 'Sit down and open ___ books, please.', o: ['you', 'your', 'yours'], a: 1,
+    e: 'We use your before a noun: your books.', c: 'form' },
+  { q: '___ a language school. Its name is English House.', o: ['Its', 'It', 'It’s'], a: 2,
+    e: 'It’s = it is. Its is the possessive: its name.', c: 'its-its', d: 3 },
+  { q: 'We’re an international school. ___ students are from Europe and Asia.', o: ['Our', 'Ours', 'We'], a: 0,
+    e: 'Possessive adjectives don’t change with plural nouns: our students NOT ours students.', c: 'no-plural', d: 3 },
+  { q: 'Laura is in my class. ___ desk is near the window.', o: ['His', 'Her', 'She'], a: 1,
+    e: 'Laura is a woman: her desk.', c: 'his-her' },
+  { q: 'Peter is a teacher. He is from Ireland. What’s ___ name?', o: ['her', 'its', 'his'], a: 2,
+    e: 'Peter is a man: his name.', c: 'his-her' },
+  { q: 'Mark and Simon are friends. ___ in class 2.', o: ['They are', 'Their', 'There'], a: 0,
+    e: 'They are (subject + verb) — not their (possessive).', c: 'they-their', d: 3 },
+  { q: 'I’m Karen. ___ surname is White.', o: ['Mine', 'My', 'Me'], a: 1, e: 'Before a noun we use my: my surname.', c: 'form' },
+];
+
+export const gramFile1: Question[] = [
+  ...grammarTopic('be-positive', 'be', 1, GB(124, '1A'), bePositive),
+  ...grammarTopic('be-negative-questions', 'bq', 1, GB(124, '1B'), beNegQuestions),
+  ...grammarTopic('possessive-adjectives', 'pa', 1, GB(124, '1C'), possAdj),
+];

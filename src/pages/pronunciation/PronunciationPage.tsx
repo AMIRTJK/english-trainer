@@ -8,7 +8,7 @@ type Panel = 'none' | 'chart' | 'table';
 
 /**
  * The Vowel sounds hub: the sounds themselves, how far the learner has got, the
- * three difficulty bands, and SB p.134 as a reference.
+ * three difficulty bands, and the Sound Bank page as a reference.
  */
 export default function PronunciationPage(): JSX.Element {
   const data = useVowels();
@@ -31,7 +31,7 @@ export default function PronunciationPage(): JSX.Element {
       <header className="between">
         <div>
           <h1>Vowel sounds</h1>
-          <p className="small dim">Sound Bank, SB p.134 — {totals.total} words</p>
+          <p className="small dim">Sound Bank, SB p.{data.index.bank.page} — {totals.total} words</p>
         </div>
         <Link className="btn btn-primary btn-sm" to="/pronunciation/train">
           Train{totals.repeat > 0 ? ` (${totals.repeat})` : ''}
@@ -102,22 +102,22 @@ export default function PronunciationPage(): JSX.Element {
       <section className="card stack gap-8">
         <h2 className="small">Tests</h2>
         <p className="small dim">
-          Тест по словам проходит все 147 слов страницы; тест по правилам спрашивает то,
+          Тест по словам проходит все слова страницы ({totals.total}); тест по правилам спрашивает то,
           что написано внутри аккордеона — какие буквы дают звук и где книга ставит
           «! but also».
         </p>
         <div className="row">
-          <Link className="btn btn-primary btn-sm" to="/tests?topic=beg-p-sound-vowels&count=100">
+          <Link className="btn btn-primary btn-sm" to={`/tests?topic=${data.index.bank.wordsTopicId}&count=100`}>
             Vowel sounds test · 100 q
           </Link>
-          <Link className="btn btn-sm" to="/tests?topic=beg-p-sound-rules&count=50">
+          <Link className="btn btn-sm" to={`/tests?topic=${data.index.bank.rulesTopicId}&count=50`}>
             Sound Bank rules test · 50 q
           </Link>
         </div>
       </section>
 
       {panel === 'chart' ? <VowelSoundChart sounds={data.index.bank.sounds} /> : null}
-      {panel === 'table' ? <VowelSoundTable rows={data.rows} /> : null}
+      {panel === 'table' ? <VowelSoundTable rows={data.rows} rulesTopicId={data.index.bank.rulesTopicId} /> : null}
     </div>
   );
 }

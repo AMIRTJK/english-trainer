@@ -32,10 +32,16 @@ export interface VowelData {
 }
 
 const BANDS: Array<[VowelLevel, string, string]> = [
-  [1, 'Обычное написание', 'Буквы читаются только так: ee, ar, igh, air…'],
-  [2, 'Спорные буквы', 'Те же буквы дают разные звуки: a, o, u, oo, ere…'],
-  [3, 'Исключения «! but also»', 'Написание не подсказывает: women, friend, two, buy…'],
+  [1, 'Обычное написание', 'Буквы читаются только так:'],
+  [2, 'Спорные буквы', 'Те же буквы дают разные звуки:'],
+  [3, 'Исключения «! but also»', 'Написание не подсказывает:'],
 ];
+
+/** A few examples of a band, read off the level's own page: letters, or words for exceptions. */
+export function bandExamples(level: VowelLevel, words: VowelWord[]): string {
+  const picks = words.map((w) => (level === 3 ? w.word : w.letters ?? ''));
+  return `${[...new Set(picks.filter((x) => x && x !== '—'))].slice(0, 4).join(', ')}…`;
+}
 
 /**
  * The Vowel sounds page joined with the learner's progress.
@@ -60,12 +66,12 @@ export function useVowels(): VowelData {
       index,
       progress,
       totals: vowelTotals(index?.bank.words ?? [], store),
-      bands: BANDS.map(([level, title, hint]) => {
+      bands: BANDS.map(([level, title, lead]) => {
         const words = byLevel.get(level) ?? [];
         return {
           level,
           title,
-          hint,
+          hint: `${lead} ${bandExamples(level, words)}`,
           total: words.length,
           known: words.filter((w) => store[w.id]?.status === 'known').length,
           percent: levelProgressPercent(words, store),

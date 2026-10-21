@@ -1,6 +1,7 @@
-# English File Trainer — Beginner
+# English File Trainer — Beginner and Elementary
 
-A personal trainer for the **English File 4th edition Beginner** course. Every
+A personal trainer for the **English File 4th edition** course, levels
+**Beginner** and **Elementary** (switch the active level in Settings). Every
 question comes from the course books, is tagged with its source page, and is
 checked by an automated content gate before it can be used in a test.
 
@@ -14,6 +15,14 @@ npm run dev
 ```
 
 ## What is inside
+
+**Elementary** (from the Elementary Student’s Book): **1272 verified questions**
+across 67 topics — every Grammar Bank section, the Vocabulary Bank, the Sound
+Bank and the lessons’ pronunciation work — 728 words with Russian translation
+and the book’s transcription, and the Vowel sounds trainer built from SB p.166.
+See `docs/decisions.md` §22.
+
+**Beginner:**
 
 - **773 verified questions** across 49 topics and 195 distinct constructs.
 - Quick Test (50), Official Test (100), Full Test, Custom Test, Weak Areas,
@@ -67,7 +76,8 @@ npm run dev
 
 Educational content lives in `content/<levelId>/`, separate from the app code and
 free of framework imports. Adding **Elementary** means adding a folder and one
-line in `content/registry.ts` — no business logic changes.
+line in `content/registry.ts` — no business logic changes. Level-independent
+builders live in `content/common/`; Elementary was added exactly that way.
 
 The content gate (`npm run lint:content`) checks that:
 

@@ -29,6 +29,9 @@ export interface ImportedItem {
   note?: string;
 }
 
+/** The level the paper test belongs to. It is never seeded into another one. */
+export const IMPORTED_TEST_LEVEL_ID = 'beginner';
+
 export const IMPORTED_TEST_META = {
   paper: 'English File 4th edition Beginner — 10 Quick Test',
   publisher: 'Oxford University Press, 2019',

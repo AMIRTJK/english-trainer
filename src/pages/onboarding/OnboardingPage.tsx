@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { LEVELS, hasContent } from '@content/registry';
-import { IMPORTED_TEST_META } from '@content/beginner/imported-quick-test';
+import { DEFAULT_LEVEL_ID, LEVELS, getLevelMeta, hasContent } from '@content/registry';
+import { IMPORTED_TEST_META, IMPORTED_TEST_LEVEL_ID } from '@content/beginner/imported-quick-test';
 import { useApp } from '@/app/store/app-store';
 
 export function OnboardingPage(): JSX.Element {
   const { createUser } = useApp();
   const [name, setName] = useState('');
-  const [levelId, setLevelId] = useState('beginner');
+  const [levelId, setLevelId] = useState(DEFAULT_LEVEL_ID);
   const [seed, setSeed] = useState(true);
 
   const available = hasContent(levelId);
+  // The paper test belongs to one level; it is never offered for another.
+  const canImport = levelId === IMPORTED_TEST_LEVEL_ID;
 
   return (
     <div className="page" style={{ maxWidth: 520, paddingTop: 48 }}>
@@ -17,8 +19,9 @@ export function OnboardingPage(): JSX.Element {
         <div className="stack gap-8">
           <h1>English File Trainer</h1>
           <p className="dim">
-            Practice built only from your own course books — English File 4th edition Beginner,
-            Student’s Book and Workbook. Everything is stored in this browser.
+            Practice built only from your own course book —{' '}
+            {getLevelMeta(levelId)?.book ?? 'English File 4th edition'}.
+            Everything is stored in this browser.
           </p>
         </div>
 
@@ -26,7 +29,7 @@ export function OnboardingPage(): JSX.Element {
           className="card stack gap-16"
           onSubmit={(event) => {
             event.preventDefault();
-            if (available) createUser(name, levelId, seed);
+            if (available) createUser(name, levelId, seed && canImport);
           }}
         >
           <div className="stack gap-8">
@@ -60,24 +63,26 @@ export function OnboardingPage(): JSX.Element {
             ) : null}
           </div>
 
-          <label className="row" style={{ alignItems: 'flex-start', gap: 10 }}>
-            <input
-              type="checkbox"
-              checked={seed}
-              onChange={(event) => setSeed(event.target.checked)}
-              style={{ marginTop: 4 }}
-            />
-            <span className="small">
-              <strong>Import my paper Quick Test</strong>
-              <br />
-              <span className="dim">
-                Adds the {IMPORTED_TEST_META.paper} result
-                ({IMPORTED_TEST_META.correct}/{IMPORTED_TEST_META.total},
-                {' '}{IMPORTED_TEST_META.percent}%) and all {IMPORTED_TEST_META.wrong} mistakes
-                as your starting history.
+          {canImport ? (
+            <label className="row" style={{ alignItems: 'flex-start', gap: 10 }}>
+              <input
+                type="checkbox"
+                checked={seed}
+                onChange={(event) => setSeed(event.target.checked)}
+                style={{ marginTop: 4 }}
+              />
+              <span className="small">
+                <strong>Import my paper Quick Test</strong>
+                <br />
+                <span className="dim">
+                  Adds the {IMPORTED_TEST_META.paper} result
+                  ({IMPORTED_TEST_META.correct}/{IMPORTED_TEST_META.total},
+                  {' '}{IMPORTED_TEST_META.percent}%) and all {IMPORTED_TEST_META.wrong} mistakes
+                  as your starting history.
+                </span>
               </span>
-            </span>
-          </label>
+            </label>
+          ) : null}
 
           <button className="btn btn-primary btn-block" type="submit" disabled={!available}>
             Start

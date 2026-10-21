@@ -12,8 +12,7 @@
  *
  * Called from `validate-content.ts`.
  */
-import { getLevelIndex, getVocabularyIndex } from '../content/registry';
-import { unknownWords } from '../content/beginner/lexicon';
+import { getLevelIndex, getLexiconChecker, getVocabularyIndex } from '../content/registry';
 import type { SoundGroup, VocabWord } from '../content/types';
 
 export interface VocabReport {
@@ -28,6 +27,7 @@ function checkWord(
   topicIds: Set<string>,
   errors: string[],
   warnings: string[],
+  unknownWords: (text: string) => string[],
 ): void {
   const at = `[${word.id}]`;
   if (!word.ru.trim()) errors.push(`${at} missing Russian translation`);
@@ -62,6 +62,7 @@ export function validateVocabulary(levelId: string): VocabReport {
   const errors: string[] = [];
   const warnings: string[] = [];
   const vocab = getVocabularyIndex(levelId);
+  const unknownWords = (text: string): string[] => getLexiconChecker(levelId)?.unknownWords(text) ?? [];
   const level = getLevelIndex(levelId);
   if (!vocab || !level) return { errors, warnings, summary: `${levelId}: no vocabulary yet` };
 
@@ -78,7 +79,7 @@ export function validateVocabulary(levelId: string): VocabReport {
     if (previous) errors.push(`"${word.word}" appears twice: ${previous} and ${word.id}`);
     else seenWords.set(key, word.id);
 
-    checkWord(word, vocab.soundByKey, topicIds, errors, warnings);
+    checkWord(word, vocab.soundByKey, topicIds, errors, warnings, unknownWords);
   }
 
   for (const [a, b] of vocab.bank.contrasts) {

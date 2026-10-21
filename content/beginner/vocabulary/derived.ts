@@ -3,6 +3,9 @@ import { consonantRows } from '../questions/pron-consonants';
 import { EAR_CHAIR_IPA, earChairRows } from '../questions/pron-ear-chair';
 import { vowelRows } from '../questions/pron-vowels';
 import { stressRows } from '../questions/stress-words';
+import { keyOf, type KnownWord } from '../../common/words';
+
+export { keyOf } from '../../common/words';
 
 /**
  * Phonetic facts the repository already holds, joined into one lookup.
@@ -14,22 +17,7 @@ import { stressRows } from '../questions/stress-words';
  * word that is already fully described (AGENTS.md §3, Performance.md §1: this
  * runs once at module init, never per render).
  */
-export interface KnownWord {
-  ipa?: string;
-  /** Vowel Sound Bank key, when the Sound Bank lists the word. */
-  vowel?: string;
-  /** Consonant Sound Bank keys the word illustrates. */
-  consonants: string[];
-  syllables?: string[];
-  stressed?: number;
-}
-
 const known = new Map<string, KnownWord>();
-
-/** Normalise a headword: lowercase, curly apostrophe to straight. */
-export function keyOf(word: string): string {
-  return word.toLowerCase().replace(/\u2019/g, "'").trim();
-}
 
 function entry(word: string): KnownWord {
   const k = keyOf(word);

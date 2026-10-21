@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { VowelLevel, VowelWord } from '@content/types';
-import { confusableSounds } from '@content/beginner/pronunciation';
 import {
   answerVowel, buildQuestion, flushVocab, requeue, selectRound, useVowels,
 } from '@/features/vowel-sounds';
@@ -107,7 +106,7 @@ export default function VowelTrainerPage(): JSX.Element {
     word,
     index.bank.sounds,
     index.bySound,
-    confusableSounds(word.sound, word.letters),
+    index.confusableSounds(word.sound, word.letters),
     seed + position,
   );
 

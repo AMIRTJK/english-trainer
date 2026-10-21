@@ -11,8 +11,7 @@
  *
  * Called from `validate-content.ts`.
  */
-import { getVocabularyIndex, getVowelIndex } from '../content/registry';
-import { unknownWords } from '../content/beginner/lexicon';
+import { getLexiconChecker, getVocabularyIndex, getVowelIndex } from '../content/registry';
 
 export interface VowelReport {
   errors: string[];
@@ -30,6 +29,7 @@ export function validateVowels(levelId: string): VowelReport {
   if (!vowels) return { errors, warnings, summary: `${levelId}: no vowel data yet` };
 
   const soundBank = getVocabularyIndex(levelId)?.soundByKey;
+  const unknownWords = (text: string): string[] => getLexiconChecker(levelId)?.unknownWords(text) ?? [];
 
   for (const sound of vowels.bank.sounds) {
     const at = `[vowel ${sound.key}]`;

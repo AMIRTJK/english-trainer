@@ -1,4 +1,6 @@
-import type { SoundType } from '../../types';
+import type { VowelRow } from '../../common/vowel-bank';
+
+export type { PatternRow, VowelRow } from '../../common/vowel-bank';
 
 /**
  * The Vowel sounds page of the Sound Bank, SB p.134, transcribed in full.
@@ -11,19 +13,6 @@ import type { SoundType } from '../../types';
  * The book's `*` footnote — "especially before consonant + e" — is carried as
  * `magicE` rather than a star inside the letters, so the UI can spell it out.
  */
-export type PatternRow = [letters: string, ru: string, examples: string, magicE?: 1];
-
-export type VowelRow = [
-  key: string,
-  ipa: string,
-  type: SoundType,
-  ru: string,
-  hint: string,
-  patterns: PatternRow[],
-  /** The book's "! but also" column. */
-  exceptions: string,
-];
-
 export const vowelTable: VowelRow[] = [
   // ---- Short vowels ------------------------------------------------
   ['fish', 'ɪ', 'short-vowel', 'краткий и — язык ниже и расслабленнее, чем в русском «и»',

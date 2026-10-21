@@ -12,8 +12,8 @@
  *
  * Run: npm run lint:content
  */
-import { LEVELS, getLevelIndex } from '../content/registry';
-import { unknownWords, wrongForms, wrongFormsIn } from '../content/beginner/lexicon';
+import { LEVELS, getLevelIndex, getLexiconChecker, loadAllLevels } from '../content/registry';
+import type { LexiconChecker } from '../content/common/lexicon';
 import type { Question } from '../content/types';
 import { validateVocabulary } from './validate-vocabulary';
 import { validateVowels } from './validate-vowels';
@@ -50,20 +50,20 @@ function checkStructure(q: Question): void {
   }
 }
 
-function checkLexicon(q: Question): void {
-  const unknown = unknownWords(correctText(q));
+function checkLexicon(q: Question, gate: LexiconChecker, wrongForms: ReadonlySet<string>): void {
+  const unknown = gate.unknownWords(correctText(q));
   if (unknown.length > 0) {
     err(q, `prompt/answer uses words outside the allowed lexicon: ${[...new Set(unknown)].join(', ')}`);
   }
 
   // A form that is wrong on purpose must never be the correct answer.
-  const badInAnswer = wrongFormsIn(correctText(q));
+  const badInAnswer = gate.wrongFormsIn(correctText(q));
   if (badInAnswer.length > 0) {
     err(q, `correct answer contains a deliberately wrong form: ${badInAnswer.join(', ')}`);
   }
 
   // Distractors may use the declared wrong forms, but nothing else new.
-  const unknownDistractors = unknownWords(distractorText(q), wrongForms);
+  const unknownDistractors = gate.unknownWords(distractorText(q), wrongForms);
   if (unknownDistractors.length > 0) {
     err(q, `distractor uses unlisted words: ${[...new Set(unknownDistractors)].join(', ')}`);
   }
@@ -123,6 +123,8 @@ function main(): void {
     const seenPrompts = new Map<string, string>();
     const seenOptionSets = new Map<string, string>();
     const topicIds = new Set(index.content.topics.map((t) => t.id));
+    // Every level is checked against its own book only (AGENTS.md §3).
+    const gate = getLexiconChecker(level.id) as LexiconChecker;
 
     for (const q of index.content.questions) {
       total += 1;
@@ -134,7 +136,7 @@ function main(): void {
       if (q.status !== 'verified') err(q, `status ${q.status} must not be in the active pool`);
 
       checkStructure(q);
-      checkLexicon(q);
+      checkLexicon(q, gate, index.content.wrongForms);
       checkSound(q);
       checkStress(q);
 
@@ -198,4 +200,5 @@ function main(): void {
   console.log('\n  OK — all active content passed.\n');
 }
 
+await loadAllLevels();
 main();

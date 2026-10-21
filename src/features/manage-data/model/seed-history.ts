@@ -1,5 +1,5 @@
 import {
-  IMPORTED_ITEMS, IMPORTED_TEST_META, MISTAKE_DETAIL,
+  IMPORTED_ITEMS, IMPORTED_TEST_LEVEL_ID, IMPORTED_TEST_META, MISTAKE_DETAIL,
 } from '@content/beginner/imported-quick-test';
 import type { AnswerRecord, Attempt } from '@/entities/attempt/model/types';
 import type { LevelProgress } from '@/entities/user/model/types';
@@ -17,6 +17,8 @@ export const IMPORTED_ATTEMPT_ID = 'imported-file10-quick-test';
  * the note says so.
  */
 export function buildImportedAttempt(levelId: string): Attempt | null {
+  // The paper is a Beginner paper: its results never enter another level (AGENTS.md §3).
+  if (levelId !== IMPORTED_TEST_LEVEL_ID) return null;
   const index = getLevelIndex(levelId);
   if (!index) return null;
 

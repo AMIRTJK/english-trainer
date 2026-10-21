@@ -65,7 +65,7 @@ export const PRESETS: TestPreset[] = [
   },
   {
     kind: 'full',
-    title: 'Full Beginner Test',
+    title: 'Full Level Test',
     description: 'A long test covering every topic you have studied.',
     count: 150,
     mix: OFFICIAL_MIX,

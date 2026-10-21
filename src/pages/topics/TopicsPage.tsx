@@ -45,7 +45,7 @@ export default function TopicsPage(): JSX.Element {
                     <TopicRow topic={summary} title={topic.title} />
                     <p className="tiny faint">
                       {topic.summary} · {count} verified question{count === 1 ? '' : 's'}
-                      {' '}· Unit {topic.unitId.replace('beg-u', '')}
+                      {' '}· Unit {topic.unitId.replace(/^[a-z]+-u/, '')}
                     </p>
                   </div>
                 );

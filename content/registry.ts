@@ -2,20 +2,18 @@ import type {
   CategoryId, LevelContent, LevelMeta, Question, SoundGroup, Topic, VocabWord, VocabularyBank,
   VowelBank, VowelSound, VowelWord,
 } from './types';
-import { beginner } from './beginner';
+import { LEVELS, loadedContent } from './levels';
+import { createLexiconChecker, type LexiconChecker } from './common/lexicon';
+import { soundsPerLetters } from './common/vowel-bank';
 
-/**
- * Every level the app knows about. Adding Elementary means adding a folder and
- * one line here — no business logic changes (AGENTS.md §8).
+export {
+  DEFAULT_LEVEL_ID, LEVELS, hasContent, isLevelLoaded, loadAllLevels, loadLevel,
+} from './levels';
+
+/*
+ * Lookups over a level's content. They answer only for a level that has been
+ * loaded (`loadLevel`); the app loads the active level before it renders.
  */
-export const LEVELS: LevelMeta[] = [
-  beginner.meta,
-  { id: 'elementary', name: 'Elementary', order: 2, contentVersion: '0.0.0', book: 'English File 4th edition Elementary' },
-  { id: 'pre-intermediate', name: 'Pre-Intermediate', order: 3, contentVersion: '0.0.0', book: 'English File 4th edition Pre-Intermediate' },
-  { id: 'intermediate', name: 'Intermediate', order: 4, contentVersion: '0.0.0', book: 'English File 4th edition Intermediate' },
-];
-
-const CONTENT: Record<string, LevelContent> = { [beginner.meta.id]: beginner };
 
 export interface LevelIndex {
   content: LevelContent;
@@ -56,14 +54,10 @@ function push<K, V>(map: Map<K, V[]>, key: K, value: V): void {
   else map.set(key, [value]);
 }
 
-export function hasContent(levelId: string): boolean {
-  return CONTENT[levelId] !== undefined;
-}
-
 export function getLevelIndex(levelId: string): LevelIndex | null {
   const cached = indexCache.get(levelId);
   if (cached) return cached;
-  const content = CONTENT[levelId];
+  const content = loadedContent(levelId);
   if (!content) return null;
   const index = buildIndex(content);
   indexCache.set(levelId, index);
@@ -127,7 +121,7 @@ function buildVocabularyIndex(bank: VocabularyBank): VocabularyIndex {
 export function getVocabularyIndex(levelId: string): VocabularyIndex | null {
   const cached = vocabCache.get(levelId);
   if (cached) return cached;
-  const bank = CONTENT[levelId]?.vocabulary;
+  const bank = loadedContent(levelId)?.vocabulary;
   if (!bank) return null;
   const index = buildVocabularyIndex(bank);
   vocabCache.set(levelId, index);
@@ -135,7 +129,7 @@ export function getVocabularyIndex(levelId: string): VocabularyIndex | null {
 }
 
 export function hasVocabulary(levelId: string): boolean {
-  return CONTENT[levelId]?.vocabulary !== undefined;
+  return loadedContent(levelId)?.vocabulary !== undefined;
 }
 
 
@@ -147,8 +141,10 @@ export interface VowelIndex {
   /** Words per difficulty level: 1 regular spelling, 2 ambiguous, 3 exception. */
   byLevel: Map<number, VowelWord[]>;
   soundByKey: Map<string, VowelSound>;
-  /** The words that make a fair question (see ). */
+  /** The words that make a fair question: listed under one sound only. */
   askable: VowelWord[];
+  /** Sounds other than `key` that the same letters spell on this level's page. */
+  confusableSounds: (key: string, letters: string | null) => string[];
 }
 
 const vowelCache = new Map<string, VowelIndex>();
@@ -168,6 +164,7 @@ function buildVowelIndex(bank: VowelBank): VowelIndex {
   }
 
   const askable = bank.words.filter((w) => seen.get(w.word.toLowerCase()) === 1);
+  const perLetters = soundsPerLetters(bank.sounds);
 
   return {
     bank,
@@ -176,6 +173,8 @@ function buildVowelIndex(bank: VowelBank): VowelIndex {
     byLevel,
     soundByKey: new Map(bank.sounds.map((s) => [s.key, s])),
     askable,
+    confusableSounds: (key, letters) =>
+      letters === null ? [] : [...(perLetters.get(letters) ?? [])].filter((other) => other !== key),
   };
 }
 
@@ -183,7 +182,7 @@ function buildVowelIndex(bank: VowelBank): VowelIndex {
 export function getVowelIndex(levelId: string): VowelIndex | null {
   const cached = vowelCache.get(levelId);
   if (cached) return cached;
-  const bank = CONTENT[levelId]?.vowels;
+  const bank = loadedContent(levelId)?.vowels;
   if (!bank) return null;
   const index = buildVowelIndex(bank);
   vowelCache.set(levelId, index);
@@ -191,10 +190,22 @@ export function getVowelIndex(levelId: string): VowelIndex | null {
 }
 
 export function hasVowels(levelId: string): boolean {
-  return CONTENT[levelId]?.vowels !== undefined;
+  return loadedContent(levelId)?.vowels !== undefined;
 }
 
-export const DEFAULT_LEVEL_ID = beginner.meta.id;
+const checkerCache = new Map<string, LexiconChecker>();
+
+/** The lexicon gate of one level, built once (used by the content scripts). */
+export function getLexiconChecker(levelId: string): LexiconChecker | null {
+  const cached = checkerCache.get(levelId);
+  if (cached) return cached;
+  const content = loadedContent(levelId);
+  if (!content) return null;
+  const checker = createLexiconChecker(content.lexicon, content.wrongForms);
+  checkerCache.set(levelId, checker);
+  return checker;
+}
+
 export const CATEGORY_LABELS: Record<CategoryId, string> = {
   grammar: 'Grammar',
   vocabulary: 'Vocabulary',

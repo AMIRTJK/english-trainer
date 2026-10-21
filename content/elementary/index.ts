@@ -1,0 +1,23 @@
+import type { LevelContent } from '../types';
+import { meta, units } from './meta';
+import { topics } from './topics';
+import { questions } from './questions';
+import { lexicon, wrongForms } from './lexicon';
+import { vocabulary } from './vocabulary';
+import { vowels } from './pronunciation';
+
+/** Only verified items may be served in normal tests (AGENTS.md §3). */
+const activeQuestions = questions.filter((q) => q.status === 'verified');
+
+export const elementary: LevelContent = {
+  meta,
+  units,
+  topics,
+  questions: activeQuestions,
+  lexicon,
+  wrongForms,
+  vocabulary,
+  vowels,
+};
+
+export { meta as elementaryMeta };

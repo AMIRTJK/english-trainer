@@ -468,3 +468,91 @@ under the question prompt in `TestRunnerPage`.
 3. **Safety & performance.** Moving to another question or unmounting immediately
    stops all active speech and synthesised audio (`Performance.md` §2). A user
    setting (`audioPlayerEnabled`) lets learners toggle the player off if desired.
+
+## 22. The Elementary level
+
+The learner finished Beginner (exam 107/110) and moved to Elementary. The
+source is `docs/English File 4th Edition Elementary - Students Book.pdf` — like
+the Beginner book an image-only scan (169 page images, no text layer), so the
+pages were extracted once at authoring time and read directly (§1). Nothing
+about it runs in the app; `content/elementary/` holds the finished data.
+
+**What was read.** Every page that carries teachable material: the contents
+(pp.2-3), all 36 lessons and the six Practical English episodes (pp.6-101), the
+six Revise and Check pages (exam-format A/B/C items with their wrong answers),
+the whole Grammar Bank (pp.124-147), the Vocabulary Bank (pp.148-164), the
+irregular verb list (p.165) and the Sound Bank (pp.166-167). The Workbook was
+not supplied, so `source.book` is always `SB`.
+
+**The level is content-only work (AGENTS.md §8).** Where Beginner code was
+written for one level, it was generalised into `content/common/` rather than
+copied: the lexicon gate, the question builder, the Vowel sounds page builder,
+the Sound Bank rules test, the word builder and the 44 Sound Bank sounds (both
+books print the same chart with the same key words). The Beginner bank was
+dumped before and after the move and is byte-identical, so no Beginner id,
+progress or statistic changed.
+
+**Isolation.** The Elementary lexicon is built from the Elementary book only —
+no Beginner word list is imported — and every validator now checks each level
+against its own lexicon and wrong-form list (`getLexiconChecker`). Ids use the
+`ele` prefix (`ele-g-past-be-pb-0003`, `ele-w-coffee`, `ele-vs-…`), units are
+`ele-u1…12`. The Beginner paper Quick Test is a Beginner paper: it is offered at
+onboarding only for Beginner and is never seeded into another level.
+
+**What was written for the app.** The Russian translations of the 728 words,
+the Russian explanations of the p.166 spelling rules, and the question wording.
+Every question's prompt and correct answer pass the Elementary lexicon gate;
+wrong answers use either book words or a listed wrong form, most of them taken
+from the Grammar Bank "NOT …" lines and the Revise and Check distractors
+(`deliberate-errors.ts`).
+
+**Transcriptions.** The Elementary Vocabulary Bank prints a transcription for
+every headword, so word IPA is the book's. Where a word appears only in a lesson
+(feelings, colours, music, containers…) the standard British dictionary
+transcription is used. The Sound Bank group of a word is its row on p.166 when
+the page lists it; otherwise it is the stressed vowel of the transcription
+(`stressedVowelKey`), since the group must be visible in the IPA (§10a).
+Consonant key words are filed under their consonant so all 44 sounds have a word.
+
+**"Different sound" rows follow the strict rule everywhere.** Beginner applied
+the "odd word shares no vowel with the other two" rule only to the weak-vowel
+rows (§18). Elementary applies it to every vowel row, and the matching rule for
+consonants (the odd word does not contain the shared consonant, the pair does
+not contain the odd one). `tests/elementary-content.test.ts` enforces both and
+checks that all 173 words of p.166 are asked about.
+
+**Sound contrasts are read off the questions.** `vocabulary/sounds.ts` derives
+the contrast list from the vowel and consonant rows instead of a hand list, so
+the Vocabulary screen cannot drift from the question bank.
+
+**Test mix.** No Elementary Quick Test paper was supplied, so the measured
+Beginner mix (40/40/10/10, §2) stays the default for both levels. It is still a
+named constant in `presets.ts`; the Full test is titled after the active level.
+
+**Result: 1272 verified questions** — Grammar 514 (36 topics: every Grammar Bank
+section plus the 12C question-formation revision), Vocabulary 325 (24 topics),
+Pronunciation 320 (vowels 94, consonants 47, Sound Bank rules 132, -s / -ed endings 21,
+letters and silent letters 26), Word Stress 113 — **728 words, 22 vowels with 173
+page words.**
+
+## 23. Each level's content is its own lazily-loaded chunk
+
+§13 kept the content in one eagerly-loaded chunk and said to revisit that when
+a second level's vocabulary arrived. It did: with Elementary the shared content
+chunk grew from 52.5 kB to 123.6 kB gzip, and the initial payload from about
+118 kB to 189 kB — inside the ~200 kB budget of `Performance.md` §6 but no
+longer "well under" it, and the next level would have broken it.
+
+**Measured after the change** (`npm run build`, gzip): initial JS is index
+11.0 + vendor 53.9 + shared content 6.9 ≈ **72 kB**; the active level then
+loads on its own — Beginner **47.6 kB**, Elementary **70.7 kB**. A learner
+downloads only the book they study.
+
+**How it stays simple.** `content/levels.ts` holds the level list (meta only)
+and one dynamic `import()` per level. `AppProvider` loads the active level and
+renders a short "Loading…" until it is in, so every page, hook and model keeps
+reading content synchronously through the same registry functions as before.
+Switching level in Settings loads the new one the same way. A level's
+`meta.ts` and the Beginner paper-test record stay in the shared chunk because
+the level list and onboarding need them before any level is loaded. Scripts
+and tests call `loadAllLevels()` first (`tests/setup-content.ts`).

@@ -167,6 +167,8 @@ export interface LevelContent {
   questions: Question[];
   /** Every word form the level is allowed to use, lowercased. */
   lexicon: ReadonlySet<string>;
+  /** Forms that are wrong on purpose: allowed in a distractor, never in an answer. */
+  wrongForms: ReadonlySet<string>;
   /** The studied word list. Absent while a level has no vocabulary data yet. */
   vocabulary?: VocabularyBank;
   /** The Sound Bank Vowel sounds page. Absent while a level has no data yet. */
@@ -218,6 +220,8 @@ export interface VowelSound {
 /** The Vowel sounds page as one bank. */
 export interface VowelBank {
   levelId: string;
+  /** SB page of the chart, and the topics of its two tests (words, rules). */
+  page: number; wordsTopicId: string; rulesTopicId: string;
   sounds: VowelSound[];
   words: VowelWord[];
 }

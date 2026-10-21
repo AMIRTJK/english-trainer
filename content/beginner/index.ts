@@ -2,7 +2,7 @@ import type { LevelContent } from '../types';
 import { meta, units } from './meta';
 import { topics } from './topics';
 import { questions } from './questions';
-import { lexicon } from './lexicon';
+import { lexicon, wrongForms } from './lexicon';
 import { vocabulary } from './vocabulary';
 import { vowels } from './pronunciation';
 
@@ -15,6 +15,7 @@ export const beginner: LevelContent = {
   topics,
   questions: activeQuestions,
   lexicon,
+  wrongForms,
   vocabulary,
   vowels,
 };

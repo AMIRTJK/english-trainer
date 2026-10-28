@@ -43,7 +43,7 @@
 }
 .shell-nav-item:hover { background: var(--surface-2); }
 .shell-nav-item.is-active { color: var(--accent); background: var(--accent-soft); }
-.shell-nav-icon { font-size: 1.05rem; line-height: 1.1; }
+.shell-nav-icon { width: 20px; height: 20px; flex: none; }
 
 @media (min-width: 760px) {
   .shell-nav {

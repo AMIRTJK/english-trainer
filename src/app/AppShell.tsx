@@ -2,18 +2,19 @@ import { useEffect, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { getLevelMeta } from '@content/registry';
 import { useTheme } from '@/shared/lib/use-theme';
+import { NavIcon, type NavIconName } from '@/shared/ui/NavIcon';
 import { ScrollToTopButton } from '@/shared/ui/ScrollToTopButton';
 import { useApp } from './store/app-store';
 import './app-shell.css';
 
-const NAV = [
-  { to: '/', label: 'Dashboard', icon: '◧' },
-  { to: '/tests', label: 'Tests', icon: '◆' },
-  { to: '/topics', label: 'Topics', icon: '☰' },
-  { to: '/vocabulary', label: 'Vocabulary', icon: '📖' },
-  { to: '/pronunciation', label: 'Sounds', icon: '🗣' },
-  { to: '/progress', label: 'Progress', icon: '◔' },
-  { to: '/settings', label: 'Settings', icon: '⚙' },
+const NAV: { to: string; label: string; icon: NavIconName }[] = [
+  { to: '/', label: 'Dashboard', icon: 'dashboard' },
+  { to: '/tests', label: 'Tests', icon: 'tests' },
+  { to: '/topics', label: 'Topics', icon: 'topics' },
+  { to: '/vocabulary', label: 'Vocabulary', icon: 'vocabulary' },
+  { to: '/pronunciation', label: 'Sounds', icon: 'sounds' },
+  { to: '/progress', label: 'Progress', icon: 'progress' },
+  { to: '/settings', label: 'Settings', icon: 'settings' },
 ];
 
 export function AppShell({ children }: { children: ReactNode }): JSX.Element {
@@ -64,7 +65,7 @@ export function AppShell({ children }: { children: ReactNode }): JSX.Element {
             end={item.to === '/'}
             className={({ isActive }) => `shell-nav-item${isActive ? ' is-active' : ''}`}
           >
-            <span aria-hidden="true" className="shell-nav-icon">{item.icon}</span>
+            <NavIcon name={item.icon} />
             <span>{item.label}</span>
           </NavLink>
         ))}

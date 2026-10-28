@@ -48,12 +48,17 @@ export function DashboardPage(): JSX.Element {
 
   return (
     <div className="page stack gap-24">
-      <header className="stack gap-8">
-        <h1>Welcome back, {user?.profile.name}</h1>
-        <p className="dim small">
-          {data.levelName} · {data.index?.content.questions.length} verified questions
-          across {data.index?.content.topics.length} topics
-        </p>
+      <header className="between">
+        <div className="stack gap-8">
+          <h1>Welcome back, {user?.profile.name}</h1>
+          <p className="dim small">
+            {data.levelName} · {data.index?.content.questions.length} verified questions
+            across {data.index?.content.topics.length} topics
+          </p>
+        </div>
+        {stats.count > 0 ? (
+          <Link className="btn btn-primary" to="/tests?start=quick-practice">Continue practice</Link>
+        ) : null}
       </header>
 
       {stats.count === 0 ? (

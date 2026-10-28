@@ -40,7 +40,7 @@
 .option {
   display: flex; align-items: center; gap: 13px;
   width: 100%; padding: 15px 16px; text-align: left;
-  background: var(--surface); border: 1.5px solid var(--border);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); cursor: pointer;
   font-size: 1.02rem;
   transition: border-color .12s, background .12s;

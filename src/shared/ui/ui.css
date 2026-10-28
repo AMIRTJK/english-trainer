@@ -58,6 +58,10 @@
 .pill-bad { background: var(--bad-soft); color: var(--bad); }
 .pill-accent { background: var(--accent-soft); color: var(--accent); }
 
+/* Пустое состояние: без рамки и тени, только текст по центру */
+.empty-state { text-align: center; align-items: center; padding: 48px 16px; }
+.empty-state > div { max-width: 40ch; }
+
 .bar { height: 7px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
 .bar > span { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
 .bar-good > span { background: var(--good); }

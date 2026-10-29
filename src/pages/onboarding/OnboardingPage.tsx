@@ -88,6 +88,8 @@ export function OnboardingPage(): JSX.Element {
             Start
           </button>
         </form>
+
+        <footer className="small faint" style={{ textAlign: 'center' }}>akteam</footer>
       </div>
     </div>
   );

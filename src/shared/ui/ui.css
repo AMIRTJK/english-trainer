@@ -58,6 +58,14 @@
 .pill-bad { background: var(--bad-soft); color: var(--bad); }
 .pill-accent { background: var(--accent-soft); color: var(--accent); }
 
+/* Подпись авторов внизу страницы: «Made by» + имя команды */
+.credits {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding-top: 20px; border-top: 1px solid var(--border);
+  font-size: .8rem; text-align: center;
+}
+.credits-name { font-weight: 650; letter-spacing: -.01em; color: var(--text); }
+
 /* Пустое состояние: без рамки и тени, только текст по центру */
 .empty-state { text-align: center; align-items: center; padding: 48px 16px; }
 .empty-state > div { max-width: 40ch; }

@@ -89,7 +89,10 @@ export function OnboardingPage(): JSX.Element {
           </button>
         </form>
 
-        <footer className="small faint" style={{ textAlign: 'center' }}>akteam</footer>
+        <footer className="credits">
+          <span className="faint">Made by</span>
+          <span className="credits-name">akteam</span>
+        </footer>
       </div>
     </div>
   );

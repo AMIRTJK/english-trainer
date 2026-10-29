@@ -55,11 +55,11 @@ describe('session', () => {
 });
 describe('export and import', () => {
     it('round-trips a profile', () => {
-        const user = emptyUser('akateam', LEVEL, '1.0.0');
+        const user = emptyUser('akteam', LEVEL, '1.0.0');
         const text = JSON.stringify(buildExport(user));
         const result = parseImport(text);
         expect(result.ok).toBe(true);
-        expect(result.data.profile.name).toBe('akateam');
+        expect(result.data.profile.name).toBe('akteam');
         expect(result.warnings).toHaveLength(0);
     });
     it('rejects a file that is not a backup', () => {
@@ -67,7 +67,7 @@ describe('export and import', () => {
         expect(parseImport('not json').ok).toBe(false);
     });
     it('warns when the content version has moved on', () => {
-        const user = emptyUser('akateam', LEVEL, '1.0.0');
+        const user = emptyUser('akteam', LEVEL, '1.0.0');
         const bundle = buildExport(user);
         bundle.contentVersions[LEVEL] = '0.0.1';
         const result = parseImport(JSON.stringify(bundle));

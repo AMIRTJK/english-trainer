@@ -39,7 +39,7 @@ export function OnboardingPage(): JSX.Element {
               className="input"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="akateam"
+              placeholder="akteam"
               autoComplete="given-name"
             />
           </div>

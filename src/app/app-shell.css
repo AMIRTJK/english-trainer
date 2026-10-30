@@ -66,16 +66,31 @@
   }
 }
 
+.shell-bar { display: contents; }
+
 @media (min-width: 760px) {
-  .shell-nav {
-    position: sticky; top: 48px; bottom: auto;
-    justify-content: flex-start;
-    max-width: var(--maxw); margin: 0 auto; width: 100%;
-    border-top: 0; border-bottom: 1px solid var(--border);
-    background: color-mix(in srgb, var(--bg) 90%, transparent);
+  /* One sticky full-width bar: a single background, blur and bottom border,
+     so nothing scrolls through gaps between header and nav. */
+  .shell-bar {
+    display: block;
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .shell-top {
+    position: static;
+    background: none; backdrop-filter: none; border-bottom: 0;
+  }
+  .shell-top-inner { padding-bottom: 4px; }
+  .shell-nav {
+    position: static;
+    justify-content: flex-start;
+    border-top: 0; background: none; backdrop-filter: none;
+    /* Aligns the first icon with the brand in the centred header row
+       (16px header gutter minus the item's own 13px padding). */
+    padding: 4px calc(max(0px, (100% - var(--maxw)) / 2) + 3px) 8px;
   }
   .shell-nav-item {
     flex: 0 0 auto; max-width: none;

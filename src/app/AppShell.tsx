@@ -34,42 +34,46 @@ export function AppShell({ children }: { children: ReactNode }): JSX.Element {
 
   return (
     <div className="shell">
-      <header className="shell-top">
-        <div className="shell-top-inner">
-          <div className="row" style={{ gap: 10 }}>
-            <span className="brand">English File Trainer</span>
-            <span className="pill pill-accent">{levelName}</span>
+      {/* On wide screens header + nav stick together as one full-width bar;
+          on small screens this wrapper has no box (display: contents). */}
+      <div className="shell-bar">
+        <header className="shell-top">
+          <div className="shell-top-inner">
+            <div className="row" style={{ gap: 10 }}>
+              <span className="brand">English File Trainer</span>
+              <span className="pill pill-accent">{levelName}</span>
+            </div>
+            <div className="row" style={{ gap: 12 }}>
+              <button
+                type="button"
+                className="theme-toggle-btn"
+                onClick={toggleTheme}
+                title={`Current theme: ${theme} (click to toggle)`}
+                aria-label="Toggle theme"
+              >
+                {resolvedTheme === 'dark' ? '☀️' : '🌙'}
+              </button>
+              <span className="small dim">{user?.profile.name}</span>
+            </div>
           </div>
-          <div className="row" style={{ gap: 12 }}>
-            <button
-              type="button"
-              className="theme-toggle-btn"
-              onClick={toggleTheme}
-              title={`Current theme: ${theme} (click to toggle)`}
-              aria-label="Toggle theme"
-            >
-              {resolvedTheme === 'dark' ? '☀️' : '🌙'}
-            </button>
-            <span className="small dim">{user?.profile.name}</span>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Nav comes before main in the DOM for screen readers; on small screens
-          it is fixed to the bottom of the viewport, so the order still reads right. */}
-      <nav className="shell-nav" aria-label="Main">
-        {NAV.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            className={({ isActive }) => `shell-nav-item${isActive ? ' is-active' : ''}`}
-          >
-            <NavIcon name={item.icon} />
-            <span className="shell-nav-label">{item.label}</span>
-          </NavLink>
-        ))}
-      </nav>
+        {/* Nav comes before main in the DOM for screen readers; on small screens
+            it is fixed to the bottom of the viewport, so the order still reads right. */}
+        <nav className="shell-nav" aria-label="Main">
+          {NAV.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive }) => `shell-nav-item${isActive ? ' is-active' : ''}`}
+            >
+              <NavIcon name={item.icon} />
+              <span className="shell-nav-label">{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+      </div>
 
       <main>{children}</main>
       <ScrollToTopButton />

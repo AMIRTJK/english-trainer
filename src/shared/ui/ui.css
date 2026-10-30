@@ -41,11 +41,15 @@
 .btn-sm { padding: 6px 11px; font-size: .84rem; }
 .btn-block { width: 100%; }
 
-.input, .select {
+.input {
   width: 100%; padding: 10px 12px; font: inherit; color: inherit;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-sm);
 }
+/* Без стрелок-спиннеров у числовых полей: значение вводится с клавиатуры. */
+.input[type='number'] { -moz-appearance: textfield; appearance: textfield; }
+.input[type='number']::-webkit-inner-spin-button,
+.input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
 .pill {
   display: inline-flex; align-items: center; gap: 6px;

@@ -8,6 +8,7 @@ import { clearSession } from '@/features/run-test/model/session-store';
 import { clearVocab, exportVocab, flushVocab, replaceVocab } from '@/features/vocab-learning';
 import { useTheme } from '@/shared/lib/use-theme';
 import { storageAvailable } from '@/shared/storage/local-store';
+import { Select } from '@/shared/ui/Select';
 
 export default function SettingsPage(): JSX.Element {
   const { user, setActiveLevel, updateUser, replaceUser, clearEverything } = useApp();
@@ -101,16 +102,15 @@ export default function SettingsPage(): JSX.Element {
 
         <div className="stack gap-8">
           <label className="small" htmlFor="level">Active level</label>
-          <select
-            id="level" className="select" value={user.profile.activeLevelId}
-            onChange={(e) => setActiveLevel(e.target.value)}
-          >
-            {LEVELS.map((level) => (
-              <option key={level.id} value={level.id}>
-                {level.name}{hasContent(level.id) ? '' : ' — no content yet'}
-              </option>
-            ))}
-          </select>
+          <Select
+            id="level" value={user.profile.activeLevelId}
+            options={LEVELS.map((level) => ({
+              value: level.id,
+              label: level.name,
+              hint: hasContent(level.id) ? undefined : 'no content yet',
+            }))}
+            onChange={setActiveLevel}
+          />
           {!hasContent(user.profile.activeLevelId) ? (
             <p className="notice notice-warn">Content for this level is not available yet.</p>
           ) : (

@@ -1,0 +1,46 @@
+.select-root { position: relative; width: 100%; }
+
+.select-trigger {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; font: inherit; color: var(--text); text-align: left;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.select-trigger:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.select-root.is-open .select-trigger,
+.select-trigger:focus-visible {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.select-value { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.select-hint { font-size: .8rem; color: var(--text-faint); white-space: nowrap; }
+
+.select-chevron, .select-check {
+  width: 18px; height: 18px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.select-chevron { color: var(--text-dim); transition: transform .15s; }
+.select-root.is-open .select-chevron { transform: rotate(180deg); }
+
+.select-list {
+  position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; right: 0;
+  margin: 0; padding: 5px; list-style: none;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 10px 30px rgba(18, 22, 33, .14), 0 2px 6px rgba(18, 22, 33, .06);
+  animation: select-in .12s ease-out;
+}
+@media (prefers-reduced-motion: reduce) { .select-list { animation: none; } }
+@keyframes select-in { from { opacity: 0; transform: translateY(-4px); } }
+
+.select-option {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 9px 10px; border-radius: 7px; cursor: pointer;
+}
+.select-option > span:first-child { flex: 1 1 auto; }
+.select-option.is-active { background: var(--surface-2); }
+.select-option[aria-selected='true'] { color: var(--accent); font-weight: 600; }
+.select-check { align-self: center; color: var(--accent); visibility: hidden; }
+.select-option[aria-selected='true'] .select-check { visibility: visible; }

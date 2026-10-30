@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DEFAULT_LEVEL_ID, LEVELS, getLevelMeta, hasContent } from '@content/registry';
 import { IMPORTED_TEST_META, IMPORTED_TEST_LEVEL_ID } from '@content/beginner/imported-quick-test';
 import { useApp } from '@/app/store/app-store';
+import { Select } from '@/shared/ui/Select';
 
 export function OnboardingPage(): JSX.Element {
   const { createUser } = useApp();
@@ -46,18 +47,16 @@ export function OnboardingPage(): JSX.Element {
 
           <div className="stack gap-8">
             <label className="small" htmlFor="level">Current level</label>
-            <select
+            <Select
               id="level"
-              className="select"
               value={levelId}
-              onChange={(event) => setLevelId(event.target.value)}
-            >
-              {LEVELS.map((level) => (
-                <option key={level.id} value={level.id}>
-                  {level.name}{hasContent(level.id) ? '' : ' — no content yet'}
-                </option>
-              ))}
-            </select>
+              options={LEVELS.map((level) => ({
+                value: level.id,
+                label: level.name,
+                hint: hasContent(level.id) ? undefined : 'no content yet',
+              }))}
+              onChange={setLevelId}
+            />
             {!available ? (
               <p className="notice notice-warn">Content for this level is not available yet.</p>
             ) : null}

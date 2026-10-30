@@ -556,3 +556,17 @@ Switching level in Settings loads the new one the same way. A level's
 `meta.ts` and the Beginner paper-test record stay in the shared chunk because
 the level list and onboarding need them before any level is loaded. Scripts
 and tests call `loadAllLevels()` first (`tests/setup-content.ts`).
+
+## 24. No custom `Cache-Control` for `/assets/` on Vercel
+
+`vercel.json` used to set `public, max-age=31536000, immutable` on
+`/assets/(.*)`. Vercel applies a `headers` rule to every response on that path,
+**including 404s**, and offers no condition on the status code. When a page was
+opened while a deploy was switching over, the browser asked for the new hashed
+CSS before it was served, got a 404 marked immutable for a year, and from then
+on rendered the app unstyled out of its disk cache — a normal reload did not help.
+
+The rule is removed. Vercel's default (`max-age=0, must-revalidate` with an
+ETag, served from its CDN) costs a cheap 304 per hashed file on a repeat visit,
+and a failed request is never pinned. Anyone who already has the bad entry
+clears it once (DevTools → Application → Clear site data).

@@ -65,7 +65,7 @@ export function AppShell({ children }: { children: ReactNode }): JSX.Element {
             className={({ isActive }) => `shell-nav-item${isActive ? ' is-active' : ''}`}
           >
             <span aria-hidden="true" className="shell-nav-icon">{item.icon}</span>
-            <span>{item.label}</span>
+            <span className="shell-nav-label">{item.label}</span>
           </NavLink>
         ))}
       </nav>

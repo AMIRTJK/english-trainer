@@ -49,7 +49,7 @@ export function Stat({ label, value, hint }: { label: string; value: ReactNode; 
 
 export function Empty({ title, children }: { title: string; children?: ReactNode }): JSX.Element {
   return (
-    <div className="card stack gap-8" style={{ textAlign: 'center', padding: '30px 18px' }}>
+    <div className="empty-state stack gap-8">
       <h3>{title}</h3>
       {children ? <div className="small dim">{children}</div> : null}
     </div>

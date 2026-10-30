@@ -39,7 +39,7 @@ export function OnboardingPage(): JSX.Element {
               className="input"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Amir"
+              placeholder="akteam"
               autoComplete="given-name"
             />
           </div>
@@ -88,6 +88,11 @@ export function OnboardingPage(): JSX.Element {
             Start
           </button>
         </form>
+
+        <footer className="credits">
+          <span className="faint">Made by</span>
+          <span className="credits-name">akteam</span>
+        </footer>
       </div>
     </div>
   );
